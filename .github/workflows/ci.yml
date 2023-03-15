@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+jobs:
+  lint_and_test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            server/node_modules
+            web/node_modules
+          key: ${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+      - run: yarn install
+      - run: yarn run lint
+      - run: yarn run test
