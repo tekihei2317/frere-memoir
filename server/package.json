@@ -1,5 +1,9 @@
 {
-  "name": "server",
+  "private": true,
+  "name": "@frere/server",
   "version": "0.1.0",
-  "private": true
+  "scripts": {
+    "build": "tsc",
+    "lint:tsc": "tsc --noEmit"
+  }
 }
