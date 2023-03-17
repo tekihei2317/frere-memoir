@@ -2,6 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -73,27 +77,31 @@ model FlowerInventory {
 
 // 花束の注文
 model BouquetOrder {
-  id               Int      @id @default(autoincrement())
-  customerId       Int
-  senderName       String
-  bouquetId        Int
-  deliveryDate     DateTime @db.Date
-  deliveryAddress1 String
-  deliveryAddress2 String?
-  deliveryMessage  String?
-  totalAmount      Int // 合計金額
-  customer         Customer @relation(fields: [customerId], references: [id])
-  bouquet          Bouquet  @relation(fields: [bouquetId], references: [id])
+  id                 Int                   @id @default(autoincrement())
+  customerId         Int
+  senderName         String
+  bouquetId          Int
+  deliveryDate       DateTime              @db.Date
+  deliveryAddress1   String
+  deliveryAddress2   String?
+  deliveryMessage    String?
+  totalAmount        Int // 合計金額
+  customer           Customer              @relation(fields: [customerId], references: [id])
+  bouquet            Bouquet               @relation(fields: [bouquetId], references: [id])
+  shipment           BouquetOrderShipment?
+  BouquetOrderDetail BouquetOrderDetail[]
 }
 
 // 花束の注文明細
 model BouquetOrderDetail {
-  id          Int                            @id @default(autoincrement())
-  flowerId    Int
-  flowerName  String
-  flowerCode  String
-  flower      Flower                         @relation(fields: [flowerId], references: [id])
-  assignments BouquetOrderDetailAssignment[]
+  id             Int                            @id @default(autoincrement())
+  bouquetOrderId Int
+  bouquetOrder   BouquetOrder                   @relation(fields: [bouquetOrderId], references: [id])
+  flowerId       Int
+  flowerName     String
+  flowerCode     String
+  flower         Flower                         @relation(fields: [flowerId], references: [id])
+  assignments    BouquetOrderDetailAssignment[]
 }
 
 // 花束の注文明細の引き当て（どのロットからいくつ出荷するか）
@@ -107,9 +115,10 @@ model BouquetOrderDetailAssignment {
 }
 
 // 花の注文の出荷イベント
-model BouquetOrderShipped {
-  bouquetOrderId Int      @id
-  shippedAt      DateTime @default(now())
+model BouquetOrderShipment {
+  bouquetOrderId Int          @id
+  bouquetOrder   BouquetOrder @relation(fields: [bouquetOrderId], references: [id])
+  shippedAt      DateTime     @default(now())
 }
 
 // 花の発注
@@ -122,12 +131,13 @@ model FlowerOrder {
 
 // 花の発注明細
 model FlowerOrderDetail {
-  id            Int         @id @default(autoincrement())
-  flowerOrderId Int
-  flowerOrder   FlowerOrder @relation(fields: [flowerOrderId], references: [id])
-  flowerId      Int
-  flowerCount   Int // 本数
-  flower        Flower      @relation(fields: [flowerId], references: [id])
+  id                       Int                        @id @default(autoincrement())
+  flowerOrderId            Int
+  flowerOrder              FlowerOrder                @relation(fields: [flowerOrderId], references: [id])
+  flowerId                 Int
+  flowerCount              Int // 本数
+  flower                   Flower                     @relation(fields: [flowerId], references: [id])
+  FlowerOrderDetailArrival FlowerOrderDetailArrival[]
 }
 
 // 花の入荷イベント
@@ -143,6 +153,8 @@ model FlowerOrderDetailArrival {
   id                   Int                @id @default(autoincrement())
   flowerOrderArrivalId Int
   flowerOrderArrival   FlowerOrderArrival @relation(fields: [flowerOrderArrivalId], references: [flowerOrderId])
+  flowerOrderDetailId  Int
+  flowerOrderDetail    FlowerOrderDetail  @relation(fields: [flowerOrderDetailId], references: [id])
   arrivedCount         Int
   flowerInventoryId    Int
   flowerInventory      FlowerInventory    @relation(fields: [flowerInventoryId], references: [id])
