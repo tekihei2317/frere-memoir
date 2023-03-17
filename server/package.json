@@ -5,5 +5,12 @@
   "scripts": {
     "build": "tsc",
     "lint:tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "prisma": "^4.11.0"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^10.0.2",
+    "prisma-erd-generator": "^1.2.5"
   }
 }
