@@ -1,0 +1,158 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 顧客
+model Customer {
+  id                   Int                @id @default(autoincrement())
+  name                 String
+  customerCredentialId Int                @unique
+  customerCredential   CustomerCredential @relation(fields: [customerCredentialId], references: [id])
+  bouquetOrders        BouquetOrder[]
+}
+
+// 顧客クレデンシャル
+model CustomerCredential {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  password        String
+  isEmailVerified Boolean
+  customer        Customer?
+}
+
+// 花束
+model Bouquet {
+  id             Int             @id @default(autoincrement())
+  bouquetCode    String          @unique
+  name           String
+  bouquetDetails BouquetDetail[]
+  bouquetOrders  BouquetOrder[]
+}
+
+// 花束の部品表
+model BouquetDetail {
+  id          Int     @id @default(autoincrement())
+  bouquetId   Int
+  bouquet     Bouquet @relation(fields: [bouquetId], references: [id])
+  flowerId    Int
+  flower      Flower  @relation(fields: [flowerId], references: [id])
+  flowerCount Int
+}
+
+// 花
+model Flower {
+  id                  Int                  @id @default(autoincrement())
+  flowerCode          String               @unique
+  name                String
+  deliveryDays        Int // 発注リードタイム
+  purchaseQuantity    Int // 購入単位数
+  maintanableDays     Int // 品質維持可能日数
+  bouquetDetails      BouquetDetail[]
+  inventories         FlowerInventory[]
+  flowerOrderDetails  FlowerOrderDetail[]
+  bouquetOrderDetails BouquetOrderDetail[]
+}
+
+// 花の在庫（日付ごとのロット）
+model FlowerInventory {
+  id          Int                            @id @default(autoincrement())
+  flowerId    Int
+  flower      Flower                         @relation(fields: [flowerId], references: [id])
+  arrivalDate DateTime                       @db.Date // 入荷日
+  arrivals    FlowerOrderDetailArrival[] // 入荷
+  assignments BouquetOrderDetailAssignment[] // 引き当て
+  disposals   FlowerDisposal[] // 廃棄
+
+  @@unique([flowerId, arrivalDate])
+}
+
+// 花束の注文
+model BouquetOrder {
+  id               Int      @id @default(autoincrement())
+  customerId       Int
+  senderName       String
+  bouquetId        Int
+  deliveryDate     DateTime @db.Date
+  deliveryAddress1 String
+  deliveryAddress2 String?
+  deliveryMessage  String?
+  totalAmount      Int // 合計金額
+  customer         Customer @relation(fields: [customerId], references: [id])
+  bouquet          Bouquet  @relation(fields: [bouquetId], references: [id])
+}
+
+// 花束の注文明細
+model BouquetOrderDetail {
+  id          Int                            @id @default(autoincrement())
+  flowerId    Int
+  flowerName  String
+  flowerCode  String
+  flower      Flower                         @relation(fields: [flowerId], references: [id])
+  assignments BouquetOrderDetailAssignment[]
+}
+
+// 花束の注文明細の引き当て（どのロットからいくつ出荷するか）
+model BouquetOrderDetailAssignment {
+  id                 Int                @id @default(autoincrement())
+  orderDetailId      Int
+  bouquetOrderDetail BouquetOrderDetail @relation(fields: [orderDetailId], references: [id])
+  inventoryId        Int
+  inventory          FlowerInventory    @relation(fields: [inventoryId], references: [id])
+  assignedCount      Int // 引き当て数
+}
+
+// 花の注文の出荷イベント
+model BouquetOrderShipped {
+  bouquetOrderId Int      @id
+  shippedAt      DateTime @default(now())
+}
+
+// 花の発注
+model FlowerOrder {
+  id           Int                 @id @default(autoincrement())
+  deliveryDate DateTime            @db.Date // 希望納品日
+  arrivedEvent FlowerOrderArrival?
+  orderDetails FlowerOrderDetail[]
+}
+
+// 花の発注明細
+model FlowerOrderDetail {
+  id            Int         @id @default(autoincrement())
+  flowerOrderId Int
+  flowerOrder   FlowerOrder @relation(fields: [flowerOrderId], references: [id])
+  flowerId      Int
+  flowerCount   Int // 本数
+  flower        Flower      @relation(fields: [flowerId], references: [id])
+}
+
+// 花の入荷イベント
+model FlowerOrderArrival {
+  flowerOrderId            Int                        @id
+  flowerOrder              FlowerOrder                @relation(fields: [flowerOrderId], references: [id])
+  arrivedAt                DateTime
+  FlowerOrderDetailArrival FlowerOrderDetailArrival[]
+}
+
+// 花の入荷実績
+model FlowerOrderDetailArrival {
+  id                   Int                @id @default(autoincrement())
+  flowerOrderArrivalId Int
+  flowerOrderArrival   FlowerOrderArrival @relation(fields: [flowerOrderArrivalId], references: [flowerOrderId])
+  arrivedCount         Int
+  flowerInventoryId    Int
+  flowerInventory      FlowerInventory    @relation(fields: [flowerInventoryId], references: [id])
+}
+
+// 花の廃棄イベント
+model FlowerDisposal {
+  id                Int             @id @default(autoincrement())
+  flowerInventoryId Int
+  flowerInventory   FlowerInventory @relation(fields: [flowerInventoryId], references: [id])
+  disposedCount     Int
+  disposedAt        DateTime        @default(now())
+}

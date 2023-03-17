@@ -5,5 +5,8 @@
   "scripts": {
     "build": "tsc",
     "lint:tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "prisma": "^4.11.0"
   }
 }
