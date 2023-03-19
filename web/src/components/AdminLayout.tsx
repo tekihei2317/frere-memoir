@@ -1,4 +1,4 @@
-import { Box, Tabs, Text, Title } from "@mantine/core";
+import { Box, Tabs, Title } from "@mantine/core";
 import { useRouter } from "next/router";
 
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
