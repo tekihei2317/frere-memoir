@@ -1,6 +1,13 @@
 import { initTRPC } from "@trpc/server";
+import { prisma } from "../database/prisma";
 
-const t = initTRPC.create();
+export function createContext() {
+  return { prisma };
+}
+
+type Context = ReturnType<typeof createContext>;
+
+const t = initTRPC.context<Context>().create();
 export const router = t.router;
 export const mergeRouters = t.mergeRouters;
 

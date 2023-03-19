@@ -3,8 +3,8 @@ import { adminProcedure } from "../trpc/initialize";
 /**
  * 花の一覧を取得する
  */
-export const getFlowers = adminProcedure.query(() => {
-  return [];
+export const getFlowers = adminProcedure.query(async ({ ctx }) => {
+  return await ctx.prisma.flower.findMany();
 });
 
 /**

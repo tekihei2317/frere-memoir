@@ -4,7 +4,11 @@
   "version": "0.1.0",
   "scripts": {
     "build": "tsc",
-    "lint:tsc": "tsc --noEmit"
+    "lint:tsc": "tsc --noEmit",
+    "db:seed": "ts-node --transpileOnly src/database/seeder/index.ts"
+  },
+  "prisma": {
+    "seed": "ts-node --transpileOnly src/database/seeder/index.ts"
   },
   "dependencies": {
     "@trpc/server": "^10.16.0",
