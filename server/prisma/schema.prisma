@@ -127,10 +127,11 @@ model BouquetOrderDetailShipment {
 
 // 花の発注
 model FlowerOrder {
-  id           Int                 @id @default(autoincrement())
-  deliveryDate DateTime            @db.Date // 希望納品日
-  arrivedEvent FlowerOrderArrival?
-  orderDetails FlowerOrderDetail[]
+  id             Int                 @id @default(autoincrement())
+  purchaseNumber String // 発注番号
+  deliveryDate   DateTime            @db.Date // 希望納品日
+  arrivedEvent   FlowerOrderArrival?
+  orderDetails   FlowerOrderDetail[]
 }
 
 // 花の発注明細
