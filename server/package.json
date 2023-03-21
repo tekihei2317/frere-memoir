@@ -4,10 +4,16 @@
   "version": "0.1.0",
   "scripts": {
     "build": "tsc",
-    "lint:tsc": "tsc --noEmit"
+    "lint:tsc": "tsc --noEmit",
+    "db:seed": "ts-node --transpileOnly src/database/seeder/index.ts"
+  },
+  "prisma": {
+    "seed": "ts-node --transpileOnly src/database/seeder/index.ts"
   },
   "dependencies": {
-    "prisma": "^4.11.0"
+    "@trpc/server": "^10.16.0",
+    "prisma": "^4.11.0",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^10.0.2",
