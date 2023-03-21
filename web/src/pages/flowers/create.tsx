@@ -28,7 +28,9 @@ const CreateFlower = () => {
             <NumberInput label="購入単位数" {...form.getInputProps("purchaseQuantity")} />
             <NumberInput label="品質維持可能日数" {...form.getInputProps("maintanableDays")} />
             <Box>
-              <Button type="submit">登録</Button>
+              <Button type="submit" loading={createFlower.isLoading}>
+                登録
+              </Button>
             </Box>
           </Stack>
         </form>
