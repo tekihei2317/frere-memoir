@@ -64,13 +64,14 @@ model Flower {
 
 // 花の在庫（日付ごとのロット）
 model FlowerInventory {
-  id          Int                          @id @default(autoincrement())
-  flowerId    Int
-  flower      Flower                       @relation(fields: [flowerId], references: [id])
-  arrivalDate DateTime                     @db.Date // 入荷日
-  arrivals    FlowerOrderDetailArrival[] // 入荷
-  disposals   FlowerDisposal[] // 廃棄
-  shipments   BouquetOrderDetailShipment[] // 出荷
+  id              Int                          @id @default(autoincrement())
+  flowerId        Int
+  flower          Flower                       @relation(fields: [flowerId], references: [id])
+  arrivalDate     DateTime                     @db.Date // 入荷日
+  currentQuantity Int                          @db.UnsignedInt // 現在の数量
+  arrivals        FlowerOrderDetailArrival[] // 入荷
+  disposals       FlowerDisposal[] // 廃棄
+  shipments       BouquetOrderDetailShipment[] // 出荷
 
   @@unique([flowerId, arrivalDate])
 }
