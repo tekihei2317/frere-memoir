@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DateString } from "../utils/zod-schema";
 
 const PurchaseDetail = z.object({
   flowerId: z.number(),
@@ -6,7 +7,7 @@ const PurchaseDetail = z.object({
 });
 
 export const CreatePurchaseInput = z.object({
-  deliveryDate: z.date(),
+  deliveryDate: DateString,
   details: z.array(PurchaseDetail).min(1),
 });
 

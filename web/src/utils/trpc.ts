@@ -1,6 +1,7 @@
-import { httpBatchLink } from "@trpc/client";
+import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import type { AppRouter } from "@frere/trpc";
+import { notifications } from "@mantine/notifications";
 
 function getBaseUrl(): string {
   if (typeof window !== "undefined")
@@ -35,9 +36,32 @@ export const trpc = createTRPCNext<AppRouter>({
         defaultOptions: {
           mutations: {
             retry: false,
+            onError(error: unknown) {
+              if (error instanceof TRPCClientError) {
+                const code = error.data.code;
+                const clientErrorCodes = ["BAD_REQUEST", "UNAUTHORIZED", "NOT_FOUND"];
+                notifications.show({
+                  // title: "エラーが発生しました",
+                  message: error.message,
+                  color: clientErrorCodes.includes(code) ? "yellow" : "red",
+                  autoClose: 5000,
+                });
+              }
+            },
           },
           queries: {
             retry: false,
+            onError(error: unknown) {
+              if (error instanceof TRPCClientError) {
+                const code = error.data.code;
+                const clientErrorCodes = ["BAD_REQUEST", "UNAUTHORIZED", "NOT_FOUND"];
+                notifications.show({
+                  title: "エラーが発生しました",
+                  message: error.message,
+                  color: clientErrorCodes.includes(code) ? "yellow" : "red",
+                });
+              }
+            },
           },
         },
       },

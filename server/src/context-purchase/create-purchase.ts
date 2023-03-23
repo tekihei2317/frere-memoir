@@ -36,7 +36,7 @@ export const createPurchase = adminProcedure.input(CreatePurchaseInput).mutation
 
     return {
       purchaseNumber: "",
-      deliveryDate: input.deliveryDate,
+      deliveryDate: new Date(input.deliveryDate),
       orderDetails: input.details.map((detail) => {
         const flower = flowerMap.get(detail.flowerId);
         if (flower === undefined) throw new TRPCError({ code: "BAD_REQUEST", message: "選択した花が存在しません" });
