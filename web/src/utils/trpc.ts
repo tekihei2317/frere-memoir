@@ -2,6 +2,7 @@ import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import type { AppRouter } from "@frere/trpc";
 import { notifications } from "@mantine/notifications";
+import superjson from "superjson";
 
 function getBaseUrl(): string {
   if (typeof window !== "undefined")
@@ -28,6 +29,7 @@ export const trpc = createTRPCNext<AppRouter>({
           url: `${getBaseUrl()}/api/trpc`,
         }),
       ],
+      transformer: superjson,
       /**
        * @link https://tanstack.com/query/v4/docs/reference/QueryClient
        **/

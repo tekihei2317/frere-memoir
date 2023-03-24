@@ -13,6 +13,7 @@
   "dependencies": {
     "@trpc/server": "^10.16.0",
     "prisma": "^4.11.0",
+    "superjson": "^1.12.2",
     "zod": "^3.21.4"
   },
   "devDependencies": {

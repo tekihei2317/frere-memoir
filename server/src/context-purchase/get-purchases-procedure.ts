@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { adminProcedure } from "../trpc/initialize";
 
 export const getPurchases = adminProcedure.query(async ({ ctx }) => {

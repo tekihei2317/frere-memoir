@@ -13,6 +13,7 @@
     "@emotion/server": "^11.10.0",
     "@frere/api-schema": "*",
     "@frere/trpc": "*",
+    "@hookform/resolvers": "^3.0.0",
     "@mantine/core": "^6.0.2",
     "@mantine/dates": "6.0.2",
     "@mantine/form": "^6.0.2",
@@ -33,6 +34,8 @@
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.43.7",
+    "superjson": "^1.12.2",
     "typescript": "4.9.5",
     "zod": "^3.21.4"
   }

@@ -1,5 +1,5 @@
 import { useForm, zodResolver } from "@mantine/form";
-import { CreatePurchaseInput, DateString } from "@frere/api-schema";
+import { CreatePurchaseInput } from "@frere/api-schema";
 import { DateInput } from "@mantine/dates";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/utils/trpc";
