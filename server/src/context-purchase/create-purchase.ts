@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { adminProcedure } from "../trpc/initialize";
 import { CreatePurchaseInput } from "./purchase-schema";
 import { CreatePurchaseWorkflow } from "./purchase-types";
+import { checkIfDeliverable } from "./purchase-util";
 
 type Workflow = CreatePurchaseWorkflow<CreatePurchaseInput>;
 
@@ -22,13 +23,9 @@ async function createPurchaseWorkflow(input: Workflow["input"], deps: Workflow["
   return createdPurchase;
 }
 
-type Deps = Workflow["deps"];
-
-const checkIfDeliverable: Deps["checkIfDeliverable"] = () => {
-  return true;
-};
-
 export const createPurchase = adminProcedure.input(CreatePurchaseInput).mutation(async ({ ctx, input }) => {
+  type Deps = Workflow["deps"];
+
   const fetchFlowers: Deps["fetchFlowers"] = async (input) => {
     const flowerIds = input.details.map((detail) => detail.flowerId);
     const flowers = await ctx.prisma.flower.findMany({ where: { id: { in: flowerIds } } });

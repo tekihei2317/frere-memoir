@@ -4,6 +4,8 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/utils/trpc";
 import { Box, Button, Container, Group, Stack, Table, Text } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
+import { notifications } from "@mantine/notifications";
+import { toISODateString } from "@/utils/format";
 
 type DeliveryDateForm = { isDirty: boolean; value: Date };
 
@@ -21,6 +23,10 @@ function useDeliveryDateForm() {
 export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data: purchase } = trpc.purchase.useQuery({ id: purchaseId });
   const { deliveryDateForm, setDeliveryDate } = useDeliveryDateForm();
+
+  const changeDeliveryDate = trpc.changeDeliveryDate.useMutation({
+    onSuccess: () => notifications.show({ message: "希望納品日を変更しました" }),
+  });
 
   useEffect(() => {
     if (!purchase) return;
@@ -61,7 +67,17 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
         <Group mt="md">
           <Button>入荷情報を登録する</Button>
           <Button>発注をキャンセルする</Button>
-          <Button disabled={!deliveryDateForm?.isDirty}>納品日を変更する</Button>
+          {deliveryDateForm && (
+            <Button
+              disabled={!deliveryDateForm.isDirty}
+              loading={changeDeliveryDate.isLoading}
+              onClick={() =>
+                changeDeliveryDate.mutate({ purchaseId, deliveryDate: toISODateString(deliveryDateForm.value) })
+              }
+            >
+              納品日を変更する
+            </Button>
+          )}
         </Group>
       </Container>
     </AdminLayout>

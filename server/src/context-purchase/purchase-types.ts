@@ -22,6 +22,11 @@ export type CreatedPurchase = Purchase & {
 };
 
 /**
+ * 仕入れが、希望納品日に納品可能かどうかを判定する
+ */
+export type CheckIfDeliverable = (purchase: Purchase) => boolean;
+
+/**
  * 仕入れする
  */
 export type CreatePurchaseWorkflow<CreatePurchaseInput> = {
@@ -29,8 +34,21 @@ export type CreatePurchaseWorkflow<CreatePurchaseInput> = {
   output: Promise<CreatedPurchase>;
   deps: {
     fetchFlowers: (input: CreatePurchaseInput) => Promise<Purchase>;
-    checkIfDeliverable: (purchase: Purchase) => boolean;
+    checkIfDeliverable: CheckIfDeliverable;
     persistPurchase: (purchase: Purchase) => Promise<CreatedPurchase>;
     sendPurchaseEmail: (purchase: Purchase) => Promise<void>;
+  };
+};
+
+/**
+ * 納品希望日を変更する
+ */
+export type ChangeDeliveryDateWorkflow<ChangeDeliveryDateInput> = {
+  input: ChangeDeliveryDateInput;
+  output: Promise<CreatedPurchase>;
+  deps: {
+    findPurchaseById: (purchaseId: number) => Promise<CreatedPurchase>;
+    checkIfDeliverable: CheckIfDeliverable;
+    updateDeliveryDate: (purchase: CreatedPurchase) => void;
   };
 };
