@@ -14,13 +14,11 @@ export type UseZodFormReturn<Schema extends ZodType<FieldValues>> = UseFormRetur
 
 export function useZodForm<TSchema extends ZodType<FieldValues>, DefaultValues = z.input<TSchema>>(
   schema: TSchema,
-  options: Omit<UseFormProps<z.input<TSchema>>, "defaultValues"> & { defaultValues?: DefaultValues } = {}
+  options: UseFormProps<z.input<TSchema>> = {}
 ): UseZodFormReturn<TSchema> {
-  const { defaultValues, ...restOptions } = options;
   const methods = useForm<z.input<TSchema>>({
     resolver: zodResolver(schema),
-    defaultValues: defaultValues as any,
-    ...restOptions,
+    ...options,
   });
 
   const Form = useCallback(

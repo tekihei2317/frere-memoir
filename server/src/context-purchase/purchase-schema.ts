@@ -23,3 +23,15 @@ export const PurchaseIdInput = z.object({
 });
 
 export type PurchaseIdInput = z.infer<typeof PurchaseIdInput>;
+
+export const ArrivalDetailInput = z.object({
+  orderDetailId: z.number(),
+  arrivedCount: z.number().min(0),
+});
+
+export const RegisterArrivalInformationInput = z.object({
+  purchaseId: z.number(),
+  arrivalDetails: z.array(ArrivalDetailInput),
+});
+
+export type RegisterArrivalInformationInput = z.infer<typeof RegisterArrivalInformationInput>;

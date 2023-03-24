@@ -51,7 +51,7 @@ const CreatePurchase = () => {
             <Box>
               <Text size="sm">発注明細</Text>
               <Group position="right">
-                <Button onClick={() => form.insertListItem("details", { flowerId: 1, multiplier: 1 })}>追加</Button>
+                <Button onClick={() => form.insertListItem("details", { flowerId: "1", multiplier: 1 })}>追加</Button>
               </Group>
               <Table mt="xs">
                 <thead>

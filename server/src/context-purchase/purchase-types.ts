@@ -70,3 +70,44 @@ export type CancelPurchaseWorkflow<CancelPurchaseInput> = {
     deletePurchase: (purchase: CreatedPurchase) => Promise<void>;
   };
 };
+
+export type ValidatedPurchaseArrival = {
+  purchaseId: number;
+  arrivalDetails: ValidatedArrivalDetail[];
+};
+
+export type ValidatedArrivalDetail = {
+  arrivedCount: number;
+};
+
+/**
+ * 仕入れの到着
+ */
+export type PurchaseArrival = {
+  purchaseId: number;
+  arrivalDetails: ArrivalDetail[];
+  arrivedAt: Date;
+};
+
+export type ArrivalDetail = {
+  arrivedCount: number;
+  orderDetail: { id: number; flowerId: number };
+};
+
+/**
+ * 仕入れ情報を登録する
+ */
+export type RegisterArrivalInformationWorkflow<ArrivalInformation> = {
+  input: ArrivalInformation;
+  output: Promise<void>;
+  deps: {
+    findPurchaseById: (purchaseId: number) => Promise<CreatedPurchase>;
+    validateArrivalInformation: (
+      input: ArrivalInformation,
+      purchase: CreatedPurchase
+    ) => Promise<ValidatedPurchaseArrival>;
+    // データベース上、在庫がないと仕入れが登録できないようになっている。そのため、ここで在庫の登録も行う。
+    // 在庫に必要な型が隠れているので、あまり良くない設計。
+    persistArrivalInformation: (arrival: ValidatedPurchaseArrival) => void;
+  };
+};

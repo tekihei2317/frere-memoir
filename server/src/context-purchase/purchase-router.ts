@@ -4,6 +4,7 @@ import { changeDeliveryDate } from "./change-delivery-date";
 import { createPurchase } from "./create-purchase";
 import { getPurchase } from "./get-purchase";
 import { getPurchases } from "./get-purchases-procedure";
+import { registerArrivalInformation } from "./register-arrival-information";
 
 export const purchaseRouter = router({
   purchases: getPurchases,
@@ -11,4 +12,5 @@ export const purchaseRouter = router({
   createPurchase,
   changeDeliveryDate,
   cancelPurchase,
+  registerArrivalInfo: registerArrivalInformation,
 });

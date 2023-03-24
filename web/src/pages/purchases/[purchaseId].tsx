@@ -7,6 +7,8 @@ import { DateInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
 import { toISODateString } from "@/utils/format";
 import { useRouter } from "next/router";
+import { useDisclosure } from "@mantine/hooks";
+import { ArrivalInfoModal } from "@/feature-purchase/ArrivalInfoModal";
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   return {
@@ -32,6 +34,7 @@ function useDeliveryDateForm() {
 export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data: purchase } = trpc.purchase.useQuery({ purchaseId });
   const { deliveryDateForm, setDeliveryDate } = useDeliveryDateForm();
+  const [isModalOpened, modalMethods] = useDisclosure(false);
 
   const changeDeliveryDate = trpc.changeDeliveryDate.useMutation({
     onSuccess: () => notifications.show({ message: "希望納品日を変更しました" }),
@@ -43,6 +46,10 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
       notifications.show({ message: "発注をキャンセルしました" });
       router.push("/purchases");
     },
+  });
+
+  const registerArrivalInfo = trpc.registerArrivalInfo.useMutation({
+    onSuccess: () => modalMethods.close(),
   });
 
   useEffect(() => {
@@ -84,7 +91,7 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
         <Group mt="md">
           {purchase?.status === "placed" && (
             <>
-              <Button>入荷情報を登録する</Button>
+              <Button onClick={modalMethods.open}>入荷情報を登録する</Button>
               <Button onClick={() => confirm("本当にキャンセルしますか？") && cancelPurchase.mutate({ purchaseId })}>
                 発注をキャンセルする
               </Button>
@@ -102,6 +109,17 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
             </Button>
           )}
         </Group>
+        <Box>
+          {purchase && (
+            <ArrivalInfoModal
+              opened={isModalOpened}
+              onClose={modalMethods.close}
+              purchase={purchase}
+              onSubmit={(values) => registerArrivalInfo.mutate(values)}
+              isSubmitting={registerArrivalInfo.isLoading}
+            />
+          )}
+        </Box>
       </Container>
     </AdminLayout>
   );

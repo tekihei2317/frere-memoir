@@ -161,6 +161,7 @@ model FlowerOrderDetailArrival {
   flowerOrderDetailId  Int                @unique
   flowerOrderDetail    FlowerOrderDetail  @relation(fields: [flowerOrderDetailId], references: [id])
   arrivedQuantity      Int
+  // 在庫がないと入荷できないようになっているので、交差エンティティを作る必要がありそう
   flowerInventoryId    Int
   flowerInventory      FlowerInventory    @relation(fields: [flowerInventoryId], references: [id])
 }
