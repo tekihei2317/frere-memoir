@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/utils/trpc";
@@ -6,6 +6,15 @@ import { Box, Button, Container, Group, Stack, Table, Text } from "@mantine/core
 import { DateInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
 import { toISODateString } from "@/utils/format";
+import { useRouter } from "next/router";
+
+export function getServerSideProps(context: GetServerSidePropsContext) {
+  return {
+    props: {
+      purchaseId: Number(context.query.purchaseId),
+    },
+  };
+}
 
 type DeliveryDateForm = { isDirty: boolean; value: Date };
 
@@ -21,11 +30,19 @@ function useDeliveryDateForm() {
 }
 
 export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data: purchase } = trpc.purchase.useQuery({ id: purchaseId });
+  const { data: purchase } = trpc.purchase.useQuery({ purchaseId });
   const { deliveryDateForm, setDeliveryDate } = useDeliveryDateForm();
 
   const changeDeliveryDate = trpc.changeDeliveryDate.useMutation({
     onSuccess: () => notifications.show({ message: "希望納品日を変更しました" }),
+  });
+
+  const router = useRouter();
+  const cancelPurchase = trpc.cancelPurchase.useMutation({
+    onSuccess: () => {
+      notifications.show({ message: "発注をキャンセルしました" });
+      router.push("/purchases");
+    },
   });
 
   useEffect(() => {
@@ -65,8 +82,14 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
           </Stack>
         </form>
         <Group mt="md">
-          <Button>入荷情報を登録する</Button>
-          <Button>発注をキャンセルする</Button>
+          {purchase?.status === "placed" && (
+            <>
+              <Button>入荷情報を登録する</Button>
+              <Button onClick={() => confirm("本当にキャンセルしますか？") && cancelPurchase.mutate({ purchaseId })}>
+                発注をキャンセルする
+              </Button>
+            </>
+          )}
           {deliveryDateForm && (
             <Button
               disabled={!deliveryDateForm.isDirty}
@@ -82,12 +105,4 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
       </Container>
     </AdminLayout>
   );
-}
-
-export function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      purchaseId: Number(context.query.purchaseId),
-    },
-  };
 }

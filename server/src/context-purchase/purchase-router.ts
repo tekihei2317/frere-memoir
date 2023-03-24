@@ -1,4 +1,5 @@
 import { router } from "../trpc/initialize";
+import { cancelPurchase } from "./cancel-purchase";
 import { changeDeliveryDate } from "./change-delivery-date";
 import { createPurchase } from "./create-purchase";
 import { getPurchase } from "./get-purchase";
@@ -9,4 +10,5 @@ export const purchaseRouter = router({
   purchase: getPurchase,
   createPurchase,
   changeDeliveryDate,
+  cancelPurchase,
 });

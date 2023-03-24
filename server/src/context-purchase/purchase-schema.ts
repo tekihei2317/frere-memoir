@@ -17,3 +17,9 @@ export const ChangeDeliveryDateInput = z.object({
   purchaseId: z.number(),
   deliveryDate: DateString,
 });
+
+export const PurchaseIdInput = z.object({
+  purchaseId: z.number(),
+});
+
+export type PurchaseIdInput = z.infer<typeof PurchaseIdInput>;

@@ -9,6 +9,11 @@ export type PurchaseDetail = {
 };
 
 /**
+ * 仕入れステータス
+ */
+export type PurchaseStatus = "placed" | "arrived";
+
+/**
  * 仕入れ
  */
 export type Purchase = {
@@ -22,7 +27,7 @@ export type CreatedPurchase = Purchase & {
 };
 
 /**
- * 仕入れが、希望納品日に納品可能かどうかを判定する
+ * 仕入れが希望納品日に納品可能かどうかを判定する
  */
 export type CheckIfDeliverable = (purchase: Purchase) => boolean;
 
@@ -50,5 +55,18 @@ export type ChangeDeliveryDateWorkflow<ChangeDeliveryDateInput> = {
     findPurchaseById: (purchaseId: number) => Promise<CreatedPurchase>;
     checkIfDeliverable: CheckIfDeliverable;
     updateDeliveryDate: (purchase: CreatedPurchase) => void;
+  };
+};
+
+/**
+ * 仕入れをキャンセルする
+ */
+export type CancelPurchaseWorkflow<CancelPurchaseInput> = {
+  input: CancelPurchaseInput;
+  output: Promise<void>;
+  deps: {
+    findUndeliveredPurchase: (purchaseId: number) => Promise<CreatedPurchase>;
+    sendCancelPurchaseEmail: (purchase: CreatedPurchase) => Promise<void>;
+    deletePurchase: (purchase: CreatedPurchase) => Promise<void>;
   };
 };

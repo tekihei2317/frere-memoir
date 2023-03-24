@@ -1,9 +1,15 @@
-import { z } from "zod";
 import { adminProcedure, notFoundError } from "../trpc/initialize";
+import { PurchaseIdInput } from "./purchase-schema";
+import { PurchaseStatus } from "./purchase-types";
 
-export const getPurchase = adminProcedure.input(z.object({ id: z.number() })).query(async ({ ctx, input }) => {
+function getPurchaseStatus<T>(purchase: { arrivedEvent: T | null }): PurchaseStatus {
+  if (purchase.arrivedEvent === null) return "placed";
+  return "placed";
+}
+
+export const getPurchase = adminProcedure.input(PurchaseIdInput).query(async ({ ctx, input }) => {
   const purchase = await ctx.prisma.flowerOrder.findUnique({
-    where: { id: input.id },
+    where: { id: input.purchaseId },
     include: {
       orderDetails: { include: { flower: true } },
       arrivedEvent: true,
@@ -13,6 +19,6 @@ export const getPurchase = adminProcedure.input(z.object({ id: z.number() })).qu
 
   return {
     ...purchase,
-    status: purchase.arrivedEvent === null ? "発注済み" : "到着済み",
+    status: getPurchaseStatus(purchase),
   };
 });
