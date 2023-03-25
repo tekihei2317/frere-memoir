@@ -36,7 +36,7 @@ const Purchases = () => {
                   </td>
                   <td>園芸センター</td>
                   <td>{toISODateString(purchase.deliveryDate)}</td>
-                  <td>{purchase.status}</td>
+                  <td>{purchase.status === "placed" ? "発注中" : "入荷完了"}</td>
                 </tr>
               ))}
           </tbody>

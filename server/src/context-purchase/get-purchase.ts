@@ -1,17 +1,12 @@
 import { adminProcedure, notFoundError } from "../trpc/initialize";
+import { getPurchaseStatus } from "./purchase-query-util";
 import { PurchaseIdInput } from "./purchase-schema";
-import { PurchaseStatus } from "./purchase-types";
-
-function getPurchaseStatus<T>(purchase: { arrivedEvent: T | null }): PurchaseStatus {
-  if (purchase.arrivedEvent === null) return "placed";
-  return "placed";
-}
 
 export const getPurchase = adminProcedure.input(PurchaseIdInput).query(async ({ ctx, input }) => {
   const purchase = await ctx.prisma.flowerOrder.findUnique({
     where: { id: input.purchaseId },
     include: {
-      orderDetails: { include: { flower: true } },
+      orderDetails: { include: { flower: true, arrival: true } },
       arrivedEvent: true,
     },
   });

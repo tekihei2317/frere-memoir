@@ -70,7 +70,7 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
                   <tr>
                     <th>花（購入単位数）</th>
                     <th>数量</th>
-                    <th></th>
+                    {purchase?.status === "arrived" && <th>入荷数</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -80,7 +80,8 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
                         <td>
                           {detail.flower.name}（{detail.flower.purchaseQuantity}）
                         </td>
-                        <td> {detail.orderQuantity} </td>
+                        <td>{detail.orderQuantity}</td>
+                        <td>{detail.arrival?.arrivedQuantity}</td>
                       </tr>
                     ))}
                 </tbody>
@@ -95,18 +96,18 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
               <Button onClick={() => confirm("本当にキャンセルしますか？") && cancelPurchase.mutate({ purchaseId })}>
                 発注をキャンセルする
               </Button>
+              {deliveryDateForm && (
+                <Button
+                  disabled={!deliveryDateForm.isDirty}
+                  loading={changeDeliveryDate.isLoading}
+                  onClick={() =>
+                    changeDeliveryDate.mutate({ purchaseId, deliveryDate: toISODateString(deliveryDateForm.value) })
+                  }
+                >
+                  納品日を変更する
+                </Button>
+              )}
             </>
-          )}
-          {deliveryDateForm && (
-            <Button
-              disabled={!deliveryDateForm.isDirty}
-              loading={changeDeliveryDate.isLoading}
-              onClick={() =>
-                changeDeliveryDate.mutate({ purchaseId, deliveryDate: toISODateString(deliveryDateForm.value) })
-              }
-            >
-              納品日を変更する
-            </Button>
           )}
         </Group>
         <Box>

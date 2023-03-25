@@ -1,4 +1,5 @@
 import { adminProcedure } from "../trpc/initialize";
+import { getPurchaseStatus } from "./purchase-query-util";
 
 export const getPurchases = adminProcedure.query(async ({ ctx }) => {
   const purchases = await ctx.prisma.flowerOrder.findMany({
@@ -12,6 +13,6 @@ export const getPurchases = adminProcedure.query(async ({ ctx }) => {
 
   return purchases.map((purchase) => ({
     ...purchase,
-    status: purchase.arrivedEvent === null ? "発注済み" : "到着済み",
+    status: getPurchaseStatus(purchase),
   }));
 });

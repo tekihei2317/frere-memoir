@@ -71,13 +71,14 @@ export type CancelPurchaseWorkflow<CancelPurchaseInput> = {
   };
 };
 
-export type ValidatedPurchaseArrival = {
+type UnvalidatedPurchaseArrival = {
   purchaseId: number;
-  arrivalDetails: ValidatedArrivalDetail[];
+  arrivalDetails: UnvalidatedArrivalDetail[];
 };
 
-export type ValidatedArrivalDetail = {
+type UnvalidatedArrivalDetail = {
   arrivedCount: number;
+  orderDetailId: number;
 };
 
 /**
@@ -85,14 +86,16 @@ export type ValidatedArrivalDetail = {
  */
 export type PurchaseArrival = {
   purchaseId: number;
-  arrivalDetails: ArrivalDetail[];
   arrivedAt: Date;
+  arrivalDetails: ArrivalDetail[];
 };
 
 export type ArrivalDetail = {
   arrivedCount: number;
   orderDetail: { id: number; flowerId: number };
 };
+
+type ValidateArrivalDetails = (details: UnvalidatedArrivalDetail[], purchase: Purchase) => Promise<ArrivalDetail[]>;
 
 /**
  * 仕入れ情報を登録する
@@ -102,12 +105,13 @@ export type RegisterArrivalInformationWorkflow<ArrivalInformation> = {
   output: Promise<void>;
   deps: {
     findPurchaseById: (purchaseId: number) => Promise<CreatedPurchase>;
-    validateArrivalInformation: (
-      input: ArrivalInformation,
-      purchase: CreatedPurchase
-    ) => Promise<ValidatedPurchaseArrival>;
+    validateArrivalDetails: ValidateArrivalDetails;
+    validateArrivalInformation: (input: {
+      arrival: UnvalidatedPurchaseArrival;
+      purchase: CreatedPurchase;
+      validateArrivalDetails: ValidateArrivalDetails;
+    }) => Promise<PurchaseArrival>;
     // データベース上、在庫がないと仕入れが登録できないようになっている。そのため、ここで在庫の登録も行う。
-    // 在庫に必要な型が隠れているので、あまり良くない設計。
-    persistArrivalInformation: (arrival: ValidatedPurchaseArrival) => void;
+    persistArrivalInformation: (arrival: PurchaseArrival) => void;
   };
 };
