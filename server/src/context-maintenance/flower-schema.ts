@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const FlowerId = z.number();
 
+export const FlowerIdInput = z.object({ flowerId: FlowerId });
+
 export const CreateFlowerInput = z.object({
   flowerCode: z.string(),
   name: z.string(),
