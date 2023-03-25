@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { adminProcedure } from "../trpc/initialize";
-import { CreatePurchaseInput } from "./purchase-schema";
-import { CreatePurchaseWorkflow } from "./purchase-types";
+import { CreatePurchaseInput } from "./api-schema";
+import { CreatePurchaseWorkflow } from "./types";
 import { checkIfDeliverable } from "./purchase-util";
 
 type Workflow = CreatePurchaseWorkflow<CreatePurchaseInput>;

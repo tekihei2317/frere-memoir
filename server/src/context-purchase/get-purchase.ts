@@ -1,6 +1,6 @@
 import { adminProcedure, notFoundError } from "../trpc/initialize";
 import { getPurchaseStatus } from "./purchase-query-util";
-import { PurchaseIdInput } from "./purchase-schema";
+import { PurchaseIdInput } from "./api-schema";
 
 export const getPurchase = adminProcedure.input(PurchaseIdInput).query(async ({ ctx, input }) => {
   const purchase = await ctx.prisma.flowerOrder.findUnique({

@@ -1,5 +1,5 @@
 import { adminProcedure } from "../trpc/initialize";
-import { FlowerIdInput } from "../context-maintenance/maintenance-schema";
+import { FlowerIdInput } from "../context-maintenance/api-schema";
 
 /**
  * ある花の在庫を取得する

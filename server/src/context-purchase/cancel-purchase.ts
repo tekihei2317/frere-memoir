@@ -1,6 +1,6 @@
 import { adminProcedure, notFoundError } from "../trpc/initialize";
-import { PurchaseIdInput } from "./purchase-schema";
-import { CancelPurchaseWorkflow } from "./purchase-types";
+import { PurchaseIdInput } from "./api-schema";
+import { CancelPurchaseWorkflow } from "./types";
 
 type Workflow = CancelPurchaseWorkflow<PurchaseIdInput>;
 

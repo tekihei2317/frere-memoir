@@ -1,8 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, notFoundError } from "../trpc/initialize";
-import { ChangeDeliveryDateInput } from "./purchase-schema";
-import { ChangeDeliveryDateWorkflow, CreatedPurchase } from "./purchase-types";
+import { ChangeDeliveryDateInput } from "./api-schema";
+import { ChangeDeliveryDateWorkflow, CreatedPurchase } from "./types";
 import { checkIfDeliverable } from "./purchase-util";
 
 type Workflow = ChangeDeliveryDateWorkflow<z.infer<typeof ChangeDeliveryDateInput>>;

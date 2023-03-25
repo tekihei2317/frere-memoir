@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
-import { RegisterArrivalInformationInput } from "./purchase-schema";
-import { RegisterArrivalInformationWorkflow } from "./purchase-types";
+import { RegisterArrivalInformationInput } from "./api-schema";
+import { RegisterArrivalInformationWorkflow } from "./types";
 import { adminProcedure, notFoundError } from "../trpc/initialize";
 import { prisma } from "../database/prisma";
 

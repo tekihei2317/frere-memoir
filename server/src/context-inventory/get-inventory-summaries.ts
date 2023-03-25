@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { InventorySummary } from "./inventory-types";
+import { InventorySummary } from "./types";
 
 export async function getInventorySummaries(prisma: PrismaClient) {
   return prisma.$queryRaw<InventorySummary[]>`
