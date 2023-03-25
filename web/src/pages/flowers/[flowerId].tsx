@@ -19,7 +19,7 @@ type DefaultUpdateFlowerForm = {
   maintanableDays: number | null;
 };
 
-export const FlowerDetail = ({ flowerId }: { flowerId: number }) => {
+const FlowerDetail = ({ flowerId }: { flowerId: number }) => {
   const router = useRouter();
   const flowerQuery = trpc.flower.useQuery({ id: Number(flowerId) });
   const { setValues, ...form } = useForm<

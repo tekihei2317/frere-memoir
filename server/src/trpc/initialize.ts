@@ -1,4 +1,5 @@
 import { initTRPC, TRPCError } from "@trpc/server";
+import superjson from "superjson";
 import { prisma } from "../database/prisma";
 
 export function createContext() {
@@ -7,9 +8,13 @@ export function createContext() {
 
 type Context = ReturnType<typeof createContext>;
 
-const t = initTRPC.context<Context>().create();
+const t = initTRPC.context<Context>().create({
+  transformer: superjson,
+});
 export const router = t.router;
 export const mergeRouters = t.mergeRouters;
+
+export const notFoundError = new TRPCError({ code: "NOT_FOUND", message: "データが見つかりませんでした" });
 
 const ensureUserIsCustomer = t.middleware(({ ctx, next }) => {
   return next({ ctx });

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { FlowerId, CreateFlowerInput, UpdateFlowerInput } from "./flower-schema";
-import { adminProcedure } from "../trpc/initialize";
-import { notFoundError } from "../utils/trpc";
+import { adminProcedure, notFoundError } from "../trpc/initialize";
 
 /**
  * 花の一覧を取得する
