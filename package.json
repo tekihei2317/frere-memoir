@@ -10,7 +10,8 @@
     "lint": "run-p lint:*",
     "lint:tsc": "yarn workspace @frere/server lint:tsc",
     "lint:prettier": "prettier --check '**/*/*.{js,ts}'",
-    "fix:prettier": "prettier --write '**/*/*.{js,ts}'"
+    "fix:prettier": "prettier --write '**/*/*.{js,ts}'",
+    "start": "yarn workspace @frere/web start"
   },
   "license": "MIT",
   "devDependencies": {
