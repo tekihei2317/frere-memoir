@@ -12,7 +12,8 @@
     "lint:prettier": "prettier --check '**/*/*.{js,ts}'",
     "fix:prettier": "prettier --write '**/*/*.{js,ts}'",
     "lint:eslint": "yarn workspace @frere/web lint",
-    "start": "yarn workspace @frere/web start"
+    "start": "yarn workspace @frere/web start",
+    "build": "yarn workspace @frere/web build"
   },
   "license": "MIT",
   "devDependencies": {
