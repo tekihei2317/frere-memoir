@@ -1,4 +1,4 @@
-export * from "./context-maintenance/maintenance-schema";
-export * from "./context-purchase/purchase-schema";
-export * from "./context-inventory/inventory-schema";
+export * from "./context-maintenance/api-schema";
+export * from "./context-purchase/api-schema";
+export * from "./context-inventory/api-schema";
 export * from "./utils/zod-schema";

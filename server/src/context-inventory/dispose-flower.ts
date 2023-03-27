@@ -1,7 +1,7 @@
 import { adminProcedure, notFoundError } from "../trpc/initialize";
 import { prisma } from "../database/prisma";
-import { DisposeFlowerInput } from "./inventory-schema";
-import { DisposeFlowerWorkflow } from "./inventory-types";
+import { DisposeFlowerInput } from "./api-schema";
+import { DisposeFlowerWorkflow } from "./types";
 import { TRPCError } from "@trpc/server";
 
 type Workflow = DisposeFlowerWorkflow<DisposeFlowerInput>;

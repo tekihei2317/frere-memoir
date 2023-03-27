@@ -3,7 +3,7 @@ import { cancelPurchase } from "./cancel-purchase";
 import { changeDeliveryDate } from "./change-delivery-date";
 import { createPurchase } from "./create-purchase";
 import { getPurchase } from "./get-purchase";
-import { getPurchases } from "./get-purchases-procedure";
+import { getPurchases } from "./get-purchases";
 import { registerArrivalInformation } from "./register-arrival-information";
 
 export const purchaseRouter = router({
