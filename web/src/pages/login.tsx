@@ -1,6 +1,8 @@
+import { trpc } from "@/utils/trpc";
 import { TextInput, Button, Box, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 type LoginCredentials = {
   email: string;
@@ -17,10 +19,14 @@ const Login = () => {
       password: (value) => (value.length < 4 ? "パスワードは4文字以上で入力してください" : null),
     },
   });
+  const router = useRouter();
+  const login = trpc.login.useMutation({
+    onSuccess: () => router.push("/"),
+  });
 
   return (
     <Box maw={480} mx="auto">
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form onSubmit={form.onSubmit((values) => login.mutate(values))}>
         <TextInput label="メールアドレス" {...form.getInputProps("email")} />
         <TextInput type="password" label="パスワード" {...form.getInputProps("password")} />
         <Box mt="md">
