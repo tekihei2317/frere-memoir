@@ -23,7 +23,7 @@ export default function Home() {
             <Button component={Link} href="/login">
               顧客としてログインする
             </Button>
-            <Button component={Link} href="/">
+            <Button component={Link} href="/admin">
               管理者としてログインする
             </Button>
             <Button component={Link} href="/register">

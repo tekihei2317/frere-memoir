@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-const AdminLoginInput = z.object({
+export const AdminLoginInput = z.object({
   type: z.literal("admin"),
   email: z.string().email(),
-  password: z.string(),
+  password: z.string().min(1),
 });
 
 const CustomerLoginInput = z.object({

@@ -9,7 +9,7 @@ export const env = envsafe({
     devDefault: "J0V3YQfHQWwvF5LfhrtGf4PVnfX1NEJf",
   }),
   ADMIN_EMAIL: str({
-    devDefault: "test@example.com",
+    devDefault: "admin@example.com",
   }),
   ADMIN_PASSWORD: str({
     devDefault: "pass1234",
