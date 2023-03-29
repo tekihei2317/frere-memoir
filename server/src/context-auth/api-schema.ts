@@ -20,4 +20,7 @@ export const RegisterInput = z.object({
   password: z.string(),
   name: z.string(),
 });
+
 export type RegisterInput = z.infer<typeof RegisterInput>;
+
+export type { FrereUser } from "./core/types";
