@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@trpc/server": "^10.16.0",
+    "@types/bcrypt": "^5.0.0",
     "bcrypt": "^5.1.0",
     "envsafe": "^2.0.3",
     "iron-session": "^6.3.1",

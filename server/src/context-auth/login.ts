@@ -33,8 +33,8 @@ const validateLoginInput: Deps["validateLoginInput"] = async (input) => {
   });
   if (credential === null || credential.customer === null) throw invalidCredentialsError;
 
-  // メーラアドレスが認証されているか
-  if (credential.isEmailVerified) {
+  // メールアドレスが認証されているか
+  if (!credential.isEmailVerified) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "メールアドレスを認証してください" });
   }
 

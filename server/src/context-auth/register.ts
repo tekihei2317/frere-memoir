@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { prisma } from "../database/prisma";
 import { publicProcedure } from "../trpc/initialize";
+import { makeHash } from "../utils/hash";
 import { RegisterInput } from "./api-schema";
 import { RegisterWorkflow } from "./core/types";
 
@@ -32,7 +33,7 @@ const persistCustomer: Deps["persistCustomer"] = async (input) => {
       customerCredential: {
         create: {
           email: input.email,
-          password: input.password,
+          password: makeHash(input.password),
           isEmailVerified: false,
         },
       },
