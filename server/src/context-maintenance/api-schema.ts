@@ -19,3 +19,15 @@ export const UpdateFlowerInput = z
   .merge(CreateFlowerInput);
 
 export const BouquetIdInput = z.object({ bouquetId: z.number() });
+
+export const BouquetDetailInput = z.object({
+  flowerId: z.number(),
+  flowerQuantity: z.number(),
+});
+
+export const CreateBouquetInput = z.object({
+  bouquetCode: z.string().min(1),
+  name: z.string().min(1),
+  bouquetDetails: z.array(BouquetDetailInput).min(1),
+});
+export type CreateBouquetInput = z.infer<typeof CreateBouquetInput>;
