@@ -7,6 +7,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { GetServerSideProps } from "next";
 import { useReducer, useState } from "react";
 import { DisposeFlowerInput } from "@frere/api-schema";
+import { AdminMiddleware } from "@/utils/middleware";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
@@ -88,7 +89,7 @@ const FlowerInventory = ({ flowerId }: FlowerInventoryProps) => {
   );
 };
 
-const InventoryDetail = ({ flowerId }: { flowerId: number }) => {
+export default function InventoryDetail({ flowerId }: { flowerId: number }) {
   const { data: flower } = trpc.flower.useQuery({ id: flowerId });
 
   return (
@@ -110,6 +111,6 @@ const InventoryDetail = ({ flowerId }: { flowerId: number }) => {
       </Container>
     </AdminLayout>
   );
-};
+}
 
-export default InventoryDetail;
+InventoryDetail.Middleware = AdminMiddleware;

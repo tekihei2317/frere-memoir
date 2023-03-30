@@ -1,4 +1,5 @@
 import { CustomerLayout } from "@/components/CustomerLayout";
+import { UnauthenticatedMiddleware } from "@/utils/middleware";
 import { trpc } from "@/utils/trpc";
 import { TextInput, Button, Box, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -11,7 +12,7 @@ type RegistrationInfo = {
   password: string;
 };
 
-const Login = () => {
+export default function Register() {
   const router = useRouter();
   const register = trpc.register.useMutation({
     onSuccess: () => router.push("/registration-pending"),
@@ -39,6 +40,6 @@ const Login = () => {
       </Box>
     </CustomerLayout>
   );
-};
+}
 
-export default Login;
+Register.Middleware = UnauthenticatedMiddleware;

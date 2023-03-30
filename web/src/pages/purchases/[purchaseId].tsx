@@ -9,6 +9,7 @@ import { toISODateString } from "@/utils/format";
 import { useRouter } from "next/router";
 import { useDisclosure } from "@mantine/hooks";
 import { ArrivalInfoModal } from "@/feature-purchase/ArrivalInfoModal";
+import { AdminMiddleware } from "@/utils/middleware";
 
 export function getServerSideProps(context: GetServerSidePropsContext) {
   return {
@@ -125,3 +126,5 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
     </AdminLayout>
   );
 }
+
+PurchaseDetail.Middleware = AdminMiddleware;

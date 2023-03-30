@@ -5,10 +5,11 @@ import { CreateFlowerInput } from "@frere/api-schema";
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
+import { AdminMiddleware } from "@/utils/middleware";
 
 type CreateFlowerInput = z.infer<typeof CreateFlowerInput>;
 
-const CreateFlower = () => {
+export default function CreateFlower() {
   const form = useForm<CreateFlowerInput>({
     validate: zodResolver(CreateFlowerInput),
   });
@@ -37,6 +38,6 @@ const CreateFlower = () => {
       </Container>
     </AdminLayout>
   );
-};
+}
 
-export default CreateFlower;
+CreateFlower.Middleware = AdminMiddleware;

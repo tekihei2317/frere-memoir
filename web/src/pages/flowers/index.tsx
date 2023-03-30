@@ -1,9 +1,10 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { AdminMiddleware } from "@/utils/middleware";
 import { trpc } from "@/utils/trpc";
 import { Button, Container, Group, Table } from "@mantine/core";
 import Link from "next/link";
 
-const Flowers = () => {
+export default function Flowers() {
   const flowers = trpc.flowers.useQuery();
 
   return (
@@ -42,6 +43,6 @@ const Flowers = () => {
       </Container>
     </AdminLayout>
   );
-};
+}
 
-export default Flowers;
+Flowers.Middleware = AdminMiddleware;

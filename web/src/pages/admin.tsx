@@ -7,7 +7,7 @@ import { TextInput, Button, Box } from "@mantine/core";
 
 const AdminLoginForm = AdminLoginInput.omit({ type: true });
 
-const Login = () => {
+export default function AdminLogin() {
   const {
     Form,
     register,
@@ -33,8 +33,6 @@ const Login = () => {
       </Box>
     </CustomerLayout>
   );
-};
+}
 
-Login.Middleware = UnauthenticatedMiddleware;
-
-export default Login;
+AdminLogin.Middleware = UnauthenticatedMiddleware;

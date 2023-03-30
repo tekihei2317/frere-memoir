@@ -10,7 +10,7 @@ type LoginCredentials = {
   password: string;
 };
 
-const Login = () => {
+export default function Login() {
   const form = useForm<LoginCredentials>({
     initialValues: {
       email: "",
@@ -47,8 +47,6 @@ const Login = () => {
       </Box>
     </CustomerLayout>
   );
-};
+}
 
 Login.Middleware = UnauthenticatedMiddleware;
-
-export default Login;
