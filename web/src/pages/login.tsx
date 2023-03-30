@@ -1,9 +1,9 @@
 import { CustomerLayout } from "@/components/CustomerLayout";
+import { UnauthenticatedMiddleware } from "@/utils/middleware";
 import { trpc } from "@/utils/trpc";
 import { TextInput, Button, Box, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 type LoginCredentials = {
   email: string;
@@ -20,9 +20,11 @@ const Login = () => {
       password: (value) => (value.length < 4 ? "パスワードは4文字以上で入力してください" : null),
     },
   });
-  const router = useRouter();
+  const utils = trpc.useContext();
   const login = trpc.login.useMutation({
-    onSuccess: () => router.push("/"),
+    onSuccess: (user) => {
+      utils.user.setData(undefined, user);
+    },
   });
 
   return (
@@ -32,7 +34,9 @@ const Login = () => {
           <TextInput label="メールアドレス" {...form.getInputProps("email")} />
           <TextInput type="password" label="パスワード" {...form.getInputProps("password")} />
           <Box mt="md">
-            <Button type="submit">ログイン</Button>
+            <Button type="submit" loading={login.isLoading}>
+              ログイン
+            </Button>
           </Box>
         </form>
         <Group mt="md" spacing="sm">
@@ -44,5 +48,7 @@ const Login = () => {
     </CustomerLayout>
   );
 };
+
+Login.Middleware = UnauthenticatedMiddleware;
 
 export default Login;

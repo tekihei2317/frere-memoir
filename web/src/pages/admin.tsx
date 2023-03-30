@@ -1,5 +1,6 @@
 import { CustomerLayout } from "@/components/CustomerLayout";
 import { useZodForm } from "@/components/Form";
+import { UnauthenticatedMiddleware } from "@/utils/middleware";
 import { trpc } from "@/utils/trpc";
 import { AdminLoginInput } from "@frere/api-schema";
 import { TextInput, Button, Box } from "@mantine/core";
@@ -33,5 +34,7 @@ const Login = () => {
     </CustomerLayout>
   );
 };
+
+Login.Middleware = UnauthenticatedMiddleware;
 
 export default Login;
