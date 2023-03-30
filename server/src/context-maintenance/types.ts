@@ -6,3 +6,16 @@ export type Flower = {
   purchaseQuantity: number;
   maintanableDays: number;
 };
+
+type BouquetDetail = {
+  id: number;
+  flowerQuantity: number;
+  flower: Flower;
+};
+
+export type Bouquet = {
+  id: number;
+  bouquetCode: string;
+  name: string;
+  bouquetDetails: BouquetDetail[];
+};

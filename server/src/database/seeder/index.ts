@@ -1,7 +1,9 @@
+import { bouquetSeeder } from "./bouquet-seeder";
 import { flowerSeeder } from "./flower-seeder";
 
 const databaseSeeder = {
   flowerSeeder,
+  bouquetSeeder,
 };
 
 type SeederName = keyof typeof databaseSeeder;

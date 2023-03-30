@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FlowerId, CreateFlowerInput, UpdateFlowerInput } from "./flower-schema";
+import { FlowerId, CreateFlowerInput, UpdateFlowerInput } from "./api-schema";
 import { adminProcedure, notFoundError } from "../trpc/initialize";
 
 /**
