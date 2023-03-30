@@ -4,6 +4,16 @@ on:
 jobs:
   lint_and_test:
     runs-on: ubuntu-22.04
+    services:
+      db:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: frere
+    env:
+      DATABASE_URL: mysql://root:secret@localhost:3306/frere
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -18,4 +28,5 @@ jobs:
           key: ${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
       - run: yarn install
       - run: yarn run lint
+      - run: yarn prisma migrate deploy
       - run: yarn run test

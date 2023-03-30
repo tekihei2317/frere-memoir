@@ -1,17 +1,27 @@
-import { Box, Tabs, Title } from "@mantine/core";
+import { trpc } from "@/utils/trpc";
+import { Box, Button, Flex, Tabs, Title } from "@mantine/core";
 import { useRouter } from "next/router";
 
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const activeTab = router.pathname;
+  const utils = trpc.useContext();
+  const logout = trpc.logout.useMutation({
+    onSuccess: () => {
+      utils.user.invalidate();
+    },
+  });
 
   return (
     <Box>
-      <Box py="xs" px="xs">
+      <Flex py="xs" px="xs" justify="space-between">
         <Title order={1} size="h2">
           frere-memoir
         </Title>
-      </Box>
+        <Button variant="outline" loading={logout.isLoading} onClick={() => logout.mutate()}>
+          ログアウト
+        </Button>
+      </Flex>
       <Tabs value={activeTab} onTabChange={(value) => router.push(`${value}`)} px="xs">
         <Tabs.List>
           <Tabs.Tab value="/orders">注文</Tabs.Tab>

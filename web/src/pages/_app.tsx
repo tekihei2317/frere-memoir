@@ -4,9 +4,15 @@ import { trpc } from "@/utils/trpc";
 import { DatesProvider } from "@mantine/dates";
 import dynamic from "next/dynamic";
 import { Notifications } from "@mantine/notifications";
+import { MiddlewareComponent } from "@/lib/react-middleware";
+import { Context, PublicMiddleware, useMiddlewareContext } from "@/utils/middleware";
 
-function App({ Component, pageProps }: AppProps) {
+function App<OutputContext>({
+  Component,
+  pageProps,
+}: AppProps & { Component: { Middleware?: MiddlewareComponent<Context, OutputContext> } }) {
   const AvoidSsr = dynamic(() => import("../components/AvoidSsr").then((module) => module.AvoidSsr), { ssr: false });
+  const { Middleware = PublicMiddleware } = Component;
 
   return (
     <AvoidSsr>
@@ -20,7 +26,7 @@ function App({ Component, pageProps }: AppProps) {
         <Notifications position="top-right" />
         {/* locale: jaが機能していないっぽい */}
         <DatesProvider settings={{ locale: "ja", firstDayOfWeek: 0 }}>
-          <Component {...pageProps} />
+          <Middleware ctx={useMiddlewareContext()}>{(ctx) => <Component ctx={ctx} {...pageProps} />}</Middleware>
         </DatesProvider>
       </MantineProvider>
     </AvoidSsr>

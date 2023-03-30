@@ -1,9 +1,10 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { AdminMiddleware } from "@/utils/middleware";
 import { trpc } from "@/utils/trpc";
 import { Anchor, Container, Table } from "@mantine/core";
 import Link from "next/link";
 
-const Inventories = () => {
+export default function Inventories() {
   const { data: inventorySummaries } = trpc.inventorySummaries.useQuery();
 
   return (
@@ -39,6 +40,6 @@ const Inventories = () => {
       </Container>
     </AdminLayout>
   );
-};
+}
 
-export default Inventories;
+Inventories.Middleware = AdminMiddleware;

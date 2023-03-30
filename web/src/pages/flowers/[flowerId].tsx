@@ -7,6 +7,15 @@ import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
 import { useEffect } from "react";
+import { AdminMiddleware } from "@/utils/middleware";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return {
+    props: {
+      flowerId: Number(context.query.flowerId),
+    },
+  };
+};
 
 const UpdateFlowerForm = UpdateFlowerInput.omit({ id: true });
 type UpdateFlowerForm = z.infer<typeof UpdateFlowerForm>;
@@ -19,7 +28,7 @@ type DefaultUpdateFlowerForm = {
   maintanableDays: number | null;
 };
 
-const FlowerDetail = ({ flowerId }: { flowerId: number }) => {
+export default function FlowerDetail({ flowerId }: { flowerId: number }) {
   const router = useRouter();
   const flowerQuery = trpc.flower.useQuery({ id: Number(flowerId) });
   const { setValues, ...form } = useForm<
@@ -67,14 +76,6 @@ const FlowerDetail = ({ flowerId }: { flowerId: number }) => {
       </Container>
     </AdminLayout>
   );
-};
+}
 
-export default FlowerDetail;
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return {
-    props: {
-      flowerId: Number(context.query.flowerId),
-    },
-  };
-};
+FlowerDetail.Middleware = AdminMiddleware;

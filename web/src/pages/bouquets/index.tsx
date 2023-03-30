@@ -1,7 +1,9 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { InferMiddlewareProps } from "@/lib/react-middleware";
+import { AdminMiddleware } from "@/utils/middleware";
 
-const Bouquets = () => {
+export default function Bouquets({}: InferMiddlewareProps<typeof AdminMiddleware>) {
   return <AdminLayout>花束一覧</AdminLayout>;
-};
+}
 
-export default Bouquets;
+Bouquets.Middleware = AdminMiddleware;

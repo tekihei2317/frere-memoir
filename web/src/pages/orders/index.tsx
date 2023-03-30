@@ -1,7 +1,8 @@
 import { AdminLayout } from "@/components/AdminLayout";
+import { AdminMiddleware } from "@/utils/middleware";
 
-const BouquetOrders = () => {
-  return <AdminLayout>花束一覧</AdminLayout>;
-};
+export default function BouquetOrders() {
+  return <AdminLayout>注文一覧</AdminLayout>;
+}
 
-export default BouquetOrders;
+BouquetOrders.Middleware = AdminMiddleware;

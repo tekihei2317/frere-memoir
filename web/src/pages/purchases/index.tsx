@@ -1,10 +1,11 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { toISODateString } from "@/utils/format";
+import { AdminMiddleware } from "@/utils/middleware";
 import { trpc } from "@/utils/trpc";
 import { Anchor, Button, Container, Group, Table } from "@mantine/core";
 import Link from "next/link";
 
-const Purchases = () => {
+export default function Purchases() {
   const { data: purchases } = trpc.purchases.useQuery();
 
   return (
@@ -44,6 +45,6 @@ const Purchases = () => {
       </Container>
     </AdminLayout>
   );
-};
+}
 
-export default Purchases;
+Purchases.Middleware = AdminMiddleware;

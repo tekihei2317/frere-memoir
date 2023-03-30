@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useRouter } from "next/router";
 import { toISODateString } from "@/utils/format";
 import { Box, Button, Container, Group, NumberInput, Select, Stack, Table, Text } from "@mantine/core";
+import { AdminMiddleware } from "@/utils/middleware";
 
 const PurchaseDetail = z.object({
   flowerId: z.string(),
@@ -20,7 +21,7 @@ const CreatePurchaseForm = z.object({
 
 type CreatePurchaseForm = z.infer<typeof CreatePurchaseForm>;
 
-const CreatePurchase = () => {
+export default function CreatePurchase() {
   const { data: flowers } = trpc.flowers.useQuery();
   const flowerMap = new Map(flowers ? flowers.map((flower) => [flower.id, flower]) : []);
   const form = useForm<CreatePurchaseForm, (values: CreatePurchaseForm) => CreatePurchaseInput>({
@@ -107,6 +108,6 @@ const CreatePurchase = () => {
       </Container>
     </AdminLayout>
   );
-};
+}
 
-export default CreatePurchase;
+CreatePurchase.Middleware = AdminMiddleware;
