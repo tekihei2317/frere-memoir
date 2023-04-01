@@ -87,6 +87,7 @@ model BouquetOrder {
   deliveryAddress2 String?
   deliveryMessage  String?
   totalAmount      Int // 合計金額
+  createdAt        DateTime              @default(now())
   customer         Customer              @relation(fields: [customerId], references: [id])
   bouquet          Bouquet               @relation(fields: [bouquetId], references: [id])
   shipment         BouquetOrderShipment?
