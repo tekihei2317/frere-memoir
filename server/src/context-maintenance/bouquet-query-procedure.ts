@@ -1,7 +1,7 @@
-import { adminProcedure, notFoundError } from "../trpc/initialize";
+import { adminProcedure, notFoundError, protectedProcedure } from "../trpc/initialize";
 import { BouquetIdInput } from "./api-schema";
 
-export const getBouquets = adminProcedure.query(({ ctx }) => {
+export const getBouquets = protectedProcedure.query(({ ctx }) => {
   return ctx.prisma.bouquet.findMany({ select: { id: true, bouquetCode: true, name: true } });
 });
 

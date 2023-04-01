@@ -41,7 +41,7 @@ const persistCustomer: Deps["persistCustomer"] = async (input) => {
     include: { customerCredential: true },
   });
 
-  return { name: customer.name, email: customer.customerCredential.email };
+  return { id: customer.id, name: customer.name, email: customer.customerCredential.email };
 };
 
 const sendVerificationEmail: Deps["sendVerificationEmail"] = async (customer) => {};
