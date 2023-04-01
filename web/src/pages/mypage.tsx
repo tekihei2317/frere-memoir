@@ -7,6 +7,13 @@ import Link from "next/link";
 
 export default function MyPage() {
   const { data: orders } = trpc.orderHistories.useQuery();
+  const cancelOrder = trpc.cancelOrder.useMutation();
+
+  const handleCancelOrder = (orderId: number) => {
+    if (confirm("本当にキャンセルしますか？")) {
+      cancelOrder.mutate({ orderId });
+    }
+  };
 
   return (
     <CustomerLayout>
@@ -27,6 +34,7 @@ export default function MyPage() {
                 <th>花束</th>
                 <th>金額</th>
                 <th>状態</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -34,8 +42,15 @@ export default function MyPage() {
                 <tr key={order.id}>
                   <td>{formatDate(order.createdAt)}</td>
                   <td>{order.bouquet.name}</td>
-                  <td>{order.totalAmount.toLocaleString()}円</td>
+                  <td>¥{order.totalAmount.toLocaleString()}</td>
                   <td>{order.status === "placed" ? "注文済み" : "出荷済み"}</td>
+                  <td>
+                    {order.status === "placed" && (
+                      <Button size="xs" variant="default" onClick={() => handleCancelOrder(order.id)}>
+                        購入キャンセル
+                      </Button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

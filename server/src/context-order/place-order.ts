@@ -1,40 +1,21 @@
 import { TRPCError } from "@trpc/server";
 import { customerProcedure } from "../trpc/initialize";
 import { PlaceOrderForm } from "./api-schema";
-import { PlaceOrderWorkflow } from "./core/types";
-import { WorkflowSteps } from "../utils/workflow";
+import { PlacedOrder, ValidatedOrder } from "./core/types";
 import { prisma } from "../database/prisma";
 import { addDays, startOfDay } from "date-fns";
+import { Customer } from "../context-auth/public-types";
 
-type Workflow = PlaceOrderWorkflow<PlaceOrderForm>;
-
-const placeOrderWorkflow: Workflow = async ({ input, steps }) => {
-  const validatedOrder = await steps.validateOrderForm(input.form, input.customer);
-  if (!(await steps.checkStock(validatedOrder))) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "在庫が不足しているため、指定したお届け日にお届けできません。",
-    });
-  }
-
-  const placedOrder = await steps.persistOrder(validatedOrder);
-  await steps.processPayment(placedOrder);
-
-  return placedOrder;
-};
-
-type Steps = WorkflowSteps<Workflow>;
-
-const validateOrderForm: Steps["validateOrderForm"] = async (orderForm, customer) => {
+function validateOrderForm(orderForm: PlaceOrderForm, customer: Customer): ValidatedOrder {
   return {
     ...orderForm,
     customerId: customer.id,
     totalAmount: 0, // TODO:
     orderDetails: [], // TODO:
   };
-};
+}
 
-const checkStock: Steps["checkStock"] = async (order) => {
+async function checkStock(order: ValidatedOrder): Promise<boolean> {
   for (const detail of order.orderDetails) {
     // お届け日が最速入荷日（今日＋発注リードタイム）より前の場合は、現在の在庫で足りるかを確認する
     const isBeforeFastestArrivalDate =
@@ -49,9 +30,9 @@ const checkStock: Steps["checkStock"] = async (order) => {
   }
 
   return true;
-};
+}
 
-const persistOrder: Steps["persistOrder"] = (order) => {
+async function persistOrder(order: ValidatedOrder): Promise<PlacedOrder> {
   return prisma.bouquetOrder.create({
     data: {
       customerId: order.customerId,
@@ -73,18 +54,21 @@ const persistOrder: Steps["persistOrder"] = (order) => {
       },
     },
   });
-};
+}
 
-const processPayment: Steps["processPayment"] = async () => {};
+async function processPayment(order: PlacedOrder): Promise<void> {}
 
-export const placeOrder = customerProcedure.input(PlaceOrderForm).mutation(async ({ input, ctx }) =>
-  placeOrderWorkflow({
-    input: { form: input, customer: ctx.user },
-    steps: {
-      validateOrderForm,
-      checkStock,
-      persistOrder,
-      processPayment,
-    },
-  })
-);
+export const placeOrder = customerProcedure.input(PlaceOrderForm).mutation(async ({ input, ctx }) => {
+  const validatedOrder = await validateOrderForm(input, ctx.user);
+  if (!(await checkStock(validatedOrder))) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "在庫が不足しているため、指定したお届け日にお届けできません。",
+    });
+  }
+
+  const placedOrder = await persistOrder(validatedOrder);
+  await processPayment(placedOrder);
+
+  return placedOrder;
+});
