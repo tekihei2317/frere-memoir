@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
 }
 
 // generator erd {
@@ -116,13 +117,15 @@ model BouquetOrderShipment {
 
 // 花束の注文明細の出荷（どの在庫からいくつ出荷したか記録する）
 model BouquetOrderDetailShipment {
-  id              Int                  @id @default(autoincrement())
+  id              Int                   @id @default(autoincrement())
   orderShipmentId Int
-  orderShipment   BouquetOrderShipment @relation(fields: [orderShipmentId], references: [bouquetOrderId])
+  // FIXME: 注文（BouuquetOrder）の検索で{ is: null }としたいので、null許可にしています。
+  // null許可とnull非許可の両方のリレーションがあるときは、非許可の型のみが生成されるようです。
+  orderShipment   BouquetOrderShipment? @relation(fields: [orderShipmentId], references: [bouquetOrderId])
   orderDetailId   Int
-  orderDetail     BouquetOrderDetail   @relation(fields: [orderDetailId], references: [id])
+  orderDetail     BouquetOrderDetail    @relation(fields: [orderDetailId], references: [id])
   inventoryId     Int
-  inventory       FlowerInventory      @relation(fields: [inventoryId], references: [id])
+  inventory       FlowerInventory       @relation(fields: [inventoryId], references: [id])
   shippedQuantity Int
 }
 

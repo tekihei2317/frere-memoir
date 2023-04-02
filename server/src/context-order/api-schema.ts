@@ -17,3 +17,7 @@ export const OrderIdInput = z.object({
 export const ChangeOrderDeliveryDateInput = OrderIdInput.extend({
   deliveryDate: z.date(),
 });
+
+export const GetOrdersInput = z.object({
+  status: z.enum(["placed", "shipped"]).optional(),
+});

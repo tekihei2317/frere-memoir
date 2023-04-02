@@ -32,3 +32,5 @@ export type ShippedOrder = undefined;
 export type Order = PlacedOrder | ShippedOrder;
 
 export type FindPlacedOrder = (orderId: number) => Promise<PlacedOrder>;
+
+export type OrderStatus = "placed" | "shipped";

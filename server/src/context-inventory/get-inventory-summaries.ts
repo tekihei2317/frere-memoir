@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../database/prisma";
 import { InventorySummary } from "./types";
 
-export async function getInventorySummaries(prisma: PrismaClient) {
+export async function getInventorySummaries() {
   return prisma.$queryRaw<InventorySummary[]>`
     select
       Flower.id as flowerId,
