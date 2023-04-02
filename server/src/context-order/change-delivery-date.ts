@@ -16,17 +16,19 @@ async function updateDeliveryDate(order: PlacedOrder): Promise<void> {
   });
 }
 
-export const changeDeliveryDate = customerProcedure.input(ChangeOrderDeliveryDateInput).mutation(async ({ input }) => {
-  const order = await findPlacedOrder(input.orderId);
-  const newOrder: PlacedOrder = { ...order, deliveryDate: input.deliveryDate };
+export const changeOrderDeliveryDate = customerProcedure
+  .input(ChangeOrderDeliveryDateInput)
+  .mutation(async ({ input }) => {
+    const order = await findPlacedOrder(input.orderId);
+    const newOrder: PlacedOrder = { ...order, deliveryDate: input.deliveryDate };
 
-  if (!(await checkStock(order))) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "在庫が不足しているため、指定したお届け日にお届けできません。",
-    });
-  }
-  await updateDeliveryDate(newOrder);
+    if (!(await checkStock(order))) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "在庫が不足しているため、指定したお届け日にお届けできません。",
+      });
+    }
+    await updateDeliveryDate(newOrder);
 
-  return newOrder;
-});
+    return newOrder;
+  });
