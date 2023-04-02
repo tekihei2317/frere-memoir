@@ -1,1 +1,1 @@
-export type { Flower } from "./core/types";
+export type { Flower, Bouquet } from "./core/types";

@@ -16,6 +16,12 @@ export type ValidatedOrder = {
   orderDetails: ValidatedOrderDetail[];
 };
 
+type OrderDetail = {
+  id: number;
+  flowerId: number;
+  flowerQuantity: number;
+};
+
 export type PlacedOrder = {
   id: number;
   customerId: number;
@@ -34,3 +40,18 @@ export type Order = PlacedOrder | ShippedOrder;
 export type FindPlacedOrder = (orderId: number) => Promise<PlacedOrder>;
 
 export type OrderStatus = "placed" | "shipped";
+
+/**
+ * 出荷明細（どの在庫から何個出荷するか）
+ */
+export type ShipmentDetail = {
+  orderDetailId: number;
+  inventoryId: number;
+  shippedQuantity: number;
+};
+
+export type Shipment = {
+  orderId: number;
+  shippedAt: Date;
+  shipmentDetails: ShipmentDetail[];
+};

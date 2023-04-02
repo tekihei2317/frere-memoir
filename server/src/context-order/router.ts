@@ -4,6 +4,8 @@ import { getOrderHistories } from "./get-order-history";
 import { placeOrder } from "./place-order";
 import { changeOrderDeliveryDate } from "./change-delivery-date";
 import { getOrders } from "./get-orders";
+import { getOrder } from "./get-order";
+import { shipOrder } from "./ship-order";
 
 export const orderRouter = router({
   placeOrder,
@@ -11,4 +13,6 @@ export const orderRouter = router({
   orderHistories: getOrderHistories,
   changeOrderDeliveryDate,
   orders: getOrders,
+  order: getOrder,
+  shipOrder,
 });
