@@ -1,5 +1,5 @@
 import { AdminLayout } from "@/components/AdminLayout";
-import { getOrderStatusLabel } from "@/feature-order/order-logic";
+import { OrderStatusBadge } from "@/feature-order/OrderBadge";
 import { formatDate } from "@/utils/format";
 import { trpc } from "@/utils/trpc";
 import { Box, Button, Container, Table } from "@mantine/core";
@@ -51,7 +51,9 @@ export default function OrderDetail({ orderId }: InferGetServerSidePropsType<typ
               </tr>
               <tr>
                 <th>状態</th>
-                <td>{getOrderStatusLabel(order.status)}</td>
+                <td>
+                  <OrderStatusBadge status={order.status} />
+                </td>
               </tr>
               <tr>
                 <th>送り主名</th>

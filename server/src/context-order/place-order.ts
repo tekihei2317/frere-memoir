@@ -43,15 +43,6 @@ async function persistOrder(order: ValidatedOrder): Promise<PlacedOrder> {
       deliveryAddress2: order.deliveryAddress2,
       deliveryMessage: order.deliveryMessage,
       totalAmount: order.totalAmount,
-      orderDetails: {
-        createMany: {
-          data: order.orderDetails.map(({ flower }) => ({
-            flowerId: flower.id,
-            flowerCode: flower.flowerCode,
-            flowerName: flower.name,
-          })),
-        },
-      },
     },
   });
 }

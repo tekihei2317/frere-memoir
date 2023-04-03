@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { useZodForm } from "@/components/Form";
-import { OrderStatus, getOrderStatusLabel } from "@/feature-order/order-logic";
+import { OrderStatusBadge } from "@/feature-order/OrderBadge";
+import { OrderStatus } from "@/feature-order/order-logic";
 import { formatDate } from "@/utils/format";
 import { AdminMiddleware } from "@/utils/middleware";
 import { trpc } from "@/utils/trpc";
@@ -63,7 +64,9 @@ export default function BouquetOrders() {
                 </td>
                 <td>{order.customer.name}</td>
                 <td>{formatDate(order.deliveryDate)}</td>
-                <td>{getOrderStatusLabel(order.status)}</td>
+                <td>
+                  <OrderStatusBadge status={order.status} />
+                </td>
               </tr>
             ))}
           </tbody>
