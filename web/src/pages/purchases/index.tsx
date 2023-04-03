@@ -1,5 +1,5 @@
 import { AdminLayout } from "@/components/AdminLayout";
-import { toISODateString } from "@/utils/format";
+import { formatDate } from "@/utils/format";
 import { AdminMiddleware } from "@/utils/middleware";
 import { trpc } from "@/utils/trpc";
 import { Anchor, Button, Container, Group, Table } from "@mantine/core";
@@ -36,7 +36,7 @@ export default function Purchases() {
                     </Anchor>
                   </td>
                   <td>園芸センター</td>
-                  <td>{toISODateString(purchase.deliveryDate)}</td>
+                  <td>{formatDate(purchase.deliveryDate)}</td>
                   <td>{purchase.status === "placed" ? "発注中" : "入荷完了"}</td>
                 </tr>
               ))}

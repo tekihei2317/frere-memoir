@@ -14,7 +14,7 @@ describe("adminProcedure", () => {
     const caller = appRouter.createCaller({
       prisma,
       session: {} as IronSession,
-      user: { type: "customer", name: "customer", email: "customer@example.com" },
+      user: { id: 1, type: "customer", name: "customer", email: "customer@example.com" },
     });
 
     await expect(caller.flowers()).rejects.toThrow(authorizationError);

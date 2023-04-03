@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@trpc/server": "^10.16.0",
-    "@types/bcrypt": "^5.0.0",
     "bcrypt": "^5.1.0",
+    "date-fns": "^2.29.3",
     "envsafe": "^2.0.3",
     "iron-session": "^6.3.1",
     "prisma": "^4.11.0",
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^10.0.2",
+    "@types/bcrypt": "^5.0.0",
     "prisma-erd-generator": "^1.2.5"
   }
 }

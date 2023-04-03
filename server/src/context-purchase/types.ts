@@ -1,4 +1,4 @@
-import { Flower } from "../context-maintenance/types";
+import { Flower } from "../context-maintenance/core/types";
 
 /**
  * 仕入れ明細

@@ -9,8 +9,8 @@
     "test": "jest",
     "lint": "run-p lint:*",
     "lint:tsc": "yarn workspace @frere/web lint:tsc",
-    "lint:prettier": "prettier --check '**/*/*.{js,ts}'",
-    "fix:prettier": "prettier --write '**/*/*.{js,ts}'",
+    "lint:prettier": "prettier --check '**/*/*.{js,ts,tsx}'",
+    "fix:prettier": "prettier --write '**/*/*.{js,ts,tsx}'",
     "lint:eslint": "yarn workspace @frere/web lint",
     "start": "yarn workspace @frere/web start",
     "build": "yarn workspace @frere/web build"

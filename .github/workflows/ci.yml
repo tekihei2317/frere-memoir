@@ -27,6 +27,7 @@ jobs:
             web/node_modules
           key: ${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
       - run: yarn install
+      - run: yarn prisma generate
       - run: yarn run lint
       - run: yarn prisma migrate deploy
       - run: yarn run test

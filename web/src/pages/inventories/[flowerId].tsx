@@ -1,6 +1,6 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { useZodForm } from "@/components/Form";
-import { toISODateString } from "@/utils/format";
+import { formatDate } from "@/utils/format";
 import { trpc } from "@/utils/trpc";
 import { Box, Button, Container, Input, Modal, NumberInput, Table, Tabs, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -58,7 +58,7 @@ const FlowerInventory = ({ flowerId }: FlowerInventoryProps) => {
         <tbody>
           {flowerInventories?.map((inventory, index) => (
             <tr key={index}>
-              <td>{toISODateString(inventory.arrivalDate)}</td>
+              <td>{formatDate(inventory.arrivalDate)}</td>
               <td>{inventory.currentQuantity}</td>
               <td>
                 <Button size="xs" onClick={() => startDispose(inventory.id)}>

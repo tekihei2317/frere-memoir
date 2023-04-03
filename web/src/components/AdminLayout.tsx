@@ -2,9 +2,13 @@ import { trpc } from "@/utils/trpc";
 import { Box, Button, Flex, Tabs, Title } from "@mantine/core";
 import { useRouter } from "next/router";
 
+function rootPagePath(path: string): string {
+  return path.split("/").slice(0, 2).join("/");
+}
+
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const activeTab = router.pathname;
+  const activeTab = rootPagePath(router.pathname);
   const utils = trpc.useContext();
   const logout = trpc.logout.useMutation({
     onSuccess: () => {

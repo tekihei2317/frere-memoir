@@ -5,7 +5,7 @@ import { trpc } from "@/utils/trpc";
 import { Box, Button, Container, Group, Stack, Table, Text } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
-import { toISODateString } from "@/utils/format";
+import { formatDate } from "@/utils/format";
 import { useRouter } from "next/router";
 import { useDisclosure } from "@mantine/hooks";
 import { ArrivalInfoModal } from "@/feature-purchase/ArrivalInfoModal";
@@ -102,7 +102,7 @@ export default function PurchaseDetail({ purchaseId }: InferGetServerSidePropsTy
                   disabled={!deliveryDateForm.isDirty}
                   loading={changeDeliveryDate.isLoading}
                   onClick={() =>
-                    changeDeliveryDate.mutate({ purchaseId, deliveryDate: toISODateString(deliveryDateForm.value) })
+                    changeDeliveryDate.mutate({ purchaseId, deliveryDate: formatDate(deliveryDateForm.value) })
                   }
                 >
                   納品日を変更する

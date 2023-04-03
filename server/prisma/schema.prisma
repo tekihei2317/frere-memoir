@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
 }
 
 // generator erd {
@@ -50,16 +51,15 @@ model BouquetDetail {
 
 // 花
 model Flower {
-  id                  Int                  @id @default(autoincrement())
-  flowerCode          String               @unique
-  name                String
-  deliveryDays        Int // 発注リードタイム
-  purchaseQuantity    Int // 購入単位数
-  maintanableDays     Int // 品質維持可能日数
-  bouquetDetails      BouquetDetail[]
-  inventories         FlowerInventory[]
-  flowerOrderDetails  FlowerOrderDetail[]
-  bouquetOrderDetails BouquetOrderDetail[]
+  id                 Int                 @id @default(autoincrement())
+  flowerCode         String              @unique
+  name               String
+  deliveryDays       Int // 発注リードタイム
+  purchaseQuantity   Int // 購入単位数
+  maintanableDays    Int // 品質維持可能日数
+  bouquetDetails     BouquetDetail[]
+  inventories        FlowerInventory[]
+  flowerOrderDetails FlowerOrderDetail[]
 }
 
 // 花の在庫（日付ごとのロット）
@@ -71,7 +71,7 @@ model FlowerInventory {
   currentQuantity Int                          @db.UnsignedInt // 現在の数量
   arrivals        FlowerOrderDetailArrival[] // 入荷
   disposals       FlowerDisposal[] // 廃棄
-  shipments       BouquetOrderDetailShipment[] // 出荷
+  shipments       BouquetOrderShipmentDetail[] // 出荷
 
   @@unique([flowerId, arrivalDate])
 }
@@ -87,22 +87,10 @@ model BouquetOrder {
   deliveryAddress2 String?
   deliveryMessage  String?
   totalAmount      Int // 合計金額
+  createdAt        DateTime              @default(now())
   customer         Customer              @relation(fields: [customerId], references: [id])
   bouquet          Bouquet               @relation(fields: [bouquetId], references: [id])
   shipment         BouquetOrderShipment?
-  orderDetails     BouquetOrderDetail[]
-}
-
-// 花束の注文明細
-model BouquetOrderDetail {
-  id             Int                          @id @default(autoincrement())
-  bouquetOrderId Int
-  bouquetOrder   BouquetOrder                 @relation(fields: [bouquetOrderId], references: [id])
-  flowerId       Int
-  flowerName     String
-  flowerCode     String
-  flower         Flower                       @relation(fields: [flowerId], references: [id])
-  shipments      BouquetOrderDetailShipment[]
 }
 
 // 花束の注文の出荷
@@ -110,18 +98,18 @@ model BouquetOrderShipment {
   bouquetOrderId       Int                          @id
   bouquetOrder         BouquetOrder                 @relation(fields: [bouquetOrderId], references: [id])
   shippedAt            DateTime                     @default(now())
-  orderDetailShipments BouquetOrderDetailShipment[]
+  orderDetailShipments BouquetOrderShipmentDetail[]
 }
 
-// 花束の注文明細の出荷（どの在庫からいくつ出荷したか記録する）
-model BouquetOrderDetailShipment {
-  id              Int                  @id @default(autoincrement())
+// 花束の出荷明細（どの在庫からいくつ出荷したか記録する）
+model BouquetOrderShipmentDetail {
+  id              Int                   @id @default(autoincrement())
   orderShipmentId Int
-  orderShipment   BouquetOrderShipment @relation(fields: [orderShipmentId], references: [bouquetOrderId])
-  orderDetailId   Int
-  orderDetail     BouquetOrderDetail   @relation(fields: [orderDetailId], references: [id])
+  // FIXME: 注文（BouuquetOrder）の検索で{ is: null }としたいので、null許可にしています。
+  // null許可とnull非許可の両方のリレーションがあるときは、非許可の型のみが生成されるようです。
+  orderShipment   BouquetOrderShipment? @relation(fields: [orderShipmentId], references: [bouquetOrderId])
   inventoryId     Int
-  inventory       FlowerInventory      @relation(fields: [inventoryId], references: [id])
+  inventory       FlowerInventory       @relation(fields: [inventoryId], references: [id])
   shippedQuantity Int
 }
 

@@ -43,7 +43,7 @@ const validateLoginInput: Deps["validateLoginInput"] = async (input) => {
     throw invalidCredentialsError;
   }
 
-  return { type: "customer", email: credential.email, name: credential.customer.name };
+  return { type: "customer", id: credential.customer.id, email: credential.email, name: credential.customer.name };
 };
 
 function saveUserToSession(session: IronSession) {

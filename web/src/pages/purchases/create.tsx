@@ -5,7 +5,7 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/utils/trpc";
 import { z } from "zod";
 import { useRouter } from "next/router";
-import { toISODateString } from "@/utils/format";
+import { formatDate } from "@/utils/format";
 import { Box, Button, Container, Group, NumberInput, Select, Stack, Table, Text } from "@mantine/core";
 import { AdminMiddleware } from "@/utils/middleware";
 
@@ -31,7 +31,7 @@ export default function CreatePurchase() {
       details: [],
     },
     transformValues: (values) => ({
-      deliveryDate: toISODateString(values.deliveryDate),
+      deliveryDate: formatDate(values.deliveryDate),
       details: values.details.map((detail) => ({
         flowerId: Number(detail.flowerId),
         orderQuantity: detail.multiplier * (flowerMap.get(Number(detail.flowerId))?.purchaseQuantity ?? 0),
