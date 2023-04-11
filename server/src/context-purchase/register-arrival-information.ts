@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { RegisterArrivalInformationInput } from "./api-schema";
 import { RegisterArrivalInformationWorkflow } from "./types";
 import { adminProcedure, notFoundError } from "../trpc/initialize";
-import { prisma } from "../database/prisma";
+import { fixDateForPrisma, prisma } from "../database/prisma";
 
 type Workflow = RegisterArrivalInformationWorkflow<RegisterArrivalInformationInput>;
 
@@ -79,12 +79,12 @@ const persistArrivalInformation: Deps["persistArrivalInformation"] = async (arri
         where: {
           flowerId_arrivalDate: {
             flowerId: detail.orderDetail.flowerId,
-            arrivalDate: arrivalInfo.arrivedAt,
+            arrivalDate: fixDateForPrisma(arrivalInfo.arrivedAt),
           },
         },
         create: {
           flowerId: detail.orderDetail.flowerId,
-          arrivalDate: arrivalInfo.arrivedAt,
+          arrivalDate: fixDateForPrisma(arrivalInfo.arrivedAt),
           currentQuantity: detail.arrivedCount,
         },
         update: {

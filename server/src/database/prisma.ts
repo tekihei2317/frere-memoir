@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
+import { format } from "date-fns";
 
 export const prismaClient = new PrismaClient();
 
@@ -35,3 +36,11 @@ export const prisma = prismaClient.$extends({
     },
   },
 });
+
+/**
+ * DATE型のカラムに保存するときに、UTCへの変換で日付がずれないように調整する
+ */
+export function fixDateForPrisma(date: Date): Date {
+  // 一度JSTのYYYY-MM-DDにしてから、それをUTCとして扱う
+  return new Date(format(date, "yyyy-MM-dd"));
+}
