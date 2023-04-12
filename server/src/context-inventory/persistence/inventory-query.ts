@@ -1,10 +1,10 @@
 import { prisma } from "../../database/prisma";
 import { formatDate } from "../../utils/format";
-import { InventorySchedule, InventoryTransition } from "../core/inventory-transition";
-import { addDays, startOfDay } from "date-fns";
+import { InventorySchedule } from "../core/inventory-transition";
+import { addDays, addMonths, startOfDay } from "date-fns";
 
 type QuantityByDate = {
-  date: string;
+  date: Date;
   quantity: number;
 };
 
@@ -21,6 +21,8 @@ function fetchArrivalQuantities(flowerId: number, startDate: Date, endDate: Date
       inner join FlowerOrderDetail on FlowerOrderDetail.flowerOrderId = FlowerOrder.id
     where
       FlowerOrderDetail.flowerId = ${flowerId}
+      and FlowerOrder.deliveryDate >= ${formatDate(startDate)}
+      and FlowerOrder.deliveryDate < ${formatDate(endDate)}
     group by
       FlowerOrder.deliveryDate
     ;
@@ -41,6 +43,8 @@ function fetchShipmentQuantities(flowerId: number, startDate: Date, endDate: Dat
       inner join BouquetDetail on BouquetDetail.bouquetId = Bouquet.id
     where
       BouquetDetail.flowerId = ${flowerId}
+      and BouquetOrder.deliveryDate >= ${formatDate(startDate)}
+      and BouquetOrder.deliveryDate < ${formatDate(endDate)}
     group by
       BouquetOrder.deliveryDate
     ;
@@ -51,20 +55,20 @@ function fetchShipmentQuantities(flowerId: number, startDate: Date, endDate: Dat
  * 一週間分の在庫の入出庫予定数を取得する
  */
 export async function fetchInventorySchedules(flowerId: number, today: Date): Promise<InventorySchedule[]> {
+  const startOfToday = startOfDay(today);
   const [arrivalQuantities, shipmentQuantities] = await Promise.all([
-    fetchArrivalQuantities(flowerId, startOfDay(today), addDays(startOfDay(today), 7)),
-    fetchShipmentQuantities(flowerId, addDays(startOfDay(today), 1), addDays(startOfDay(today), 8)),
+    fetchArrivalQuantities(flowerId, startOfToday, addDays(startOfToday, 7)),
+    fetchShipmentQuantities(flowerId, addDays(startOfToday, 1), addDays(startOfToday, 8)),
   ]);
 
-  const arrivalMap = new Map(arrivalQuantities.map((quantity) => [quantity.date, quantity.quantity]));
-  const shipmentMap = new Map(shipmentQuantities.map((quantity) => [quantity.date, quantity.quantity]));
+  const arrivalMap = new Map(arrivalQuantities.map((quantity) => [formatDate(quantity.date), quantity.quantity]));
+  const shipmentMap = new Map(shipmentQuantities.map((quantity) => [formatDate(quantity.date), quantity.quantity]));
 
   const schedules: InventorySchedule[] = [...new Array(7)].map((_, index) => {
-    const dateString = formatDate(addDays(today, index));
-
     return {
-      arrivalQuantity: arrivalMap.get(dateString) ?? 0,
-      shipmentQuantity: shipmentMap.get(dateString) ?? 0,
+      arrivalQuantity: arrivalMap.get(formatDate(addDays(startOfToday, index))) ?? 0,
+      // お届け日付の1日前に出荷するため、+1している
+      shipmentQuantity: shipmentMap.get(formatDate(addDays(startOfToday, index + 1))) ?? 0,
     };
   });
 
@@ -75,6 +79,24 @@ export async function fetchInventorySchedules(flowerId: number, today: Date): Pr
  * 現在の日付別在庫数を取得する。品質維持可能日数ぶん取得する。
  */
 export async function fetchCurrentInventories(flowerId: number, today: Date): Promise<number[]> {
-  // TODO:
-  return [0, 0, 0, 0, 0];
+  const startOfToday = startOfDay(today);
+  const flower = await prisma.flower.findUniqueOrThrow({ where: { id: flowerId } });
+
+  const inventories = await prisma.flowerInventory.findMany({
+    where: {
+      flowerId,
+      arrivalDate: {
+        gte: addMonths(startOfToday, -flower.maintanableDays),
+        lt: startOfToday,
+      },
+    },
+  });
+  const inventoryMap = new Map(
+    inventories.map((inventory) => [formatDate(inventory.arrivalDate), inventory.currentQuantity])
+  );
+
+  return [...new Array(flower.maintanableDays)].map((_, days) => {
+    const dateString = formatDate(addDays(today, -(days + 1)));
+    return inventoryMap.get(dateString) ?? 0;
+  });
 }
