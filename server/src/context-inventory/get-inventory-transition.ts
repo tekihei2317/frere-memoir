@@ -6,7 +6,7 @@ import { fetchCurrentInventories, fetchInventorySchedules } from "./persistence/
 /**
  * 在庫推移を取得する
  */
-export const getInventoryTransition = adminProcedure.input(FlowerIdInput).query(async ({ ctx, input }) => {
+export const getInventoryTransition = adminProcedure.input(FlowerIdInput).query(async ({ input }) => {
   const today = new Date();
   const [inventorySchedules, currentInventories] = await Promise.all([
     fetchInventorySchedules(input.flowerId, today),
