@@ -1,24 +1,13 @@
 import { prisma } from "../database/prisma";
 import { adminProcedure } from "../trpc/initialize";
-import { WorkflowSteps } from "../utils/workflow";
 import { CreateBouquetInput } from "./api-schema";
-import { CreateBouquetWorkflow } from "./core/types";
+import { Bouquet } from "./core/types";
 
-type Workflow = CreateBouquetWorkflow<CreateBouquetInput>;
-
-const createBouquetWorkflow: Workflow = async ({ input, steps }) => {
-  const validatedInput = await steps.validateCreateBouquetInput(input);
-  const bouquet = await steps.persistBouquet(validatedInput);
-  return bouquet;
-};
-
-type Steps = WorkflowSteps<Workflow>;
-
-const validateCreateBouquetInput: Steps["validateCreateBouquetInput"] = async (input) => {
+async function validateCreateBouquetInput(input: CreateBouquetInput): Promise<CreateBouquetInput> {
   return input;
-};
+}
 
-const persistBouquet: Steps["persistBouquet"] = (input) => {
+function persistBouquet(input: CreateBouquetInput): Promise<Bouquet> {
   return prisma.bouquet.create({
     data: {
       bouquetCode: input.bouquetCode,
@@ -33,10 +22,10 @@ const persistBouquet: Steps["persistBouquet"] = (input) => {
       bouquetDetails: { include: { flower: true } },
     },
   });
-};
+}
 
-export const createBouquet = adminProcedure
-  .input(CreateBouquetInput)
-  .mutation(async ({ input }) =>
-    createBouquetWorkflow({ input, steps: { validateCreateBouquetInput, persistBouquet } })
-  );
+export const createBouquet = adminProcedure.input(CreateBouquetInput).mutation(async ({ input }) => {
+  const validatedInput = await validateCreateBouquetInput(input);
+  const bouquet = await persistBouquet(validatedInput);
+  return bouquet;
+});
