@@ -1,7 +1,7 @@
 import { prisma } from "../../database/prisma";
 import { formatDate } from "../../utils/format";
 import { InventorySchedule } from "../core/inventory-transition";
-import { addDays, addMonths, startOfDay } from "date-fns";
+import { addDays, startOfDay } from "date-fns";
 
 type QuantityByDate = {
   date: Date;
@@ -86,7 +86,7 @@ export async function fetchCurrentInventories(flowerId: number, today: Date): Pr
     where: {
       flowerId,
       arrivalDate: {
-        gte: addMonths(startOfToday, -flower.maintanableDays),
+        gte: addDays(startOfToday, -flower.maintanableDays),
         lt: startOfToday,
       },
     },
