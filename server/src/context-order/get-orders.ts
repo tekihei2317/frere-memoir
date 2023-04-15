@@ -16,6 +16,9 @@ export const getOrders = adminProcedure.input(GetOrdersInput).query(async ({ ctx
     where: {
       shipment: input.status === undefined ? undefined : input.status === "placed" ? { is: null } : { isNot: null },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   await ctx.prisma.bouquetOrder.findMany({

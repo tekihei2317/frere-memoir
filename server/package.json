@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc",
     "lint:tsc": "tsc --noEmit",
+    "test": "jest",
     "db:seed": "ts-node --transpileOnly src/database/seeder/index.ts"
   },
   "prisma": {

@@ -9,6 +9,9 @@ export const getPurchases = adminProcedure.query(async ({ ctx }) => {
       purchaseNumber: true,
       arrivedEvent: true,
     },
+    orderBy: {
+      id: "desc",
+    },
   });
 
   return purchases.map((purchase) => ({

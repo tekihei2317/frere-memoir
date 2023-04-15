@@ -1,6 +1,6 @@
 export type InventorySummary = {
   flowerId: number;
-  flowerName: number;
+  flowerName: string;
   /** 在庫数 */
   stockCount: number;
   /** 入荷予定数 */
