@@ -88,6 +88,7 @@ export default function MyPage() {
               <tr>
                 <th>注文日</th>
                 <th>花束</th>
+                <th>お届け日</th>
                 <th>金額</th>
                 <th>状態</th>
                 <th></th>
@@ -98,6 +99,7 @@ export default function MyPage() {
                 <tr key={order.id}>
                   <td>{formatDate(order.createdAt)}</td>
                   <td>{order.bouquet.name}</td>
+                  <td>{formatDate(order.deliveryDate)}</td>
                   <td>¥{order.totalAmount.toLocaleString()}</td>
                   <td>{order.status === "placed" ? "注文済み" : "出荷済み"}</td>
                   <td>
