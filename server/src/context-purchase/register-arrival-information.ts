@@ -6,19 +6,18 @@ import {
   PurchaseArrival,
   UnvalidatedArrivalDetail,
   UnvalidatedPurchaseArrival,
-  ValidateArrivalDetails,
 } from "./core/types";
 import { fixDateForPrisma, prisma } from "../database/prisma";
-import { adminProcedure, notFoundError } from "../trpc/initialize";
+import { adminProcedure } from "../trpc/initialize";
+import { throwNotFoundErrorIfNull } from "../utils/trpc";
 
-async function findPurchaseById(purchaseId: number): Promise<CreatedPurchase> {
+async function findPurchaseById(purchaseId: number): Promise<CreatedPurchase | null> {
   const purchase = await prisma.flowerOrder.findUnique({
     where: { id: purchaseId },
     include: {
       orderDetails: { include: { flower: true } },
     },
   });
-  if (purchase === null) throw notFoundError;
 
   return purchase;
 }
@@ -112,7 +111,7 @@ async function persistArrivalInformation(arrivalInfo: PurchaseArrival): Promise<
 export const registerArrivalInformation = adminProcedure
   .input(RegisterArrivalInformationInput)
   .mutation(async ({ input }) => {
-    const purchase = await findPurchaseById(input.purchaseId);
+    const purchase = throwNotFoundErrorIfNull(await findPurchaseById(input.purchaseId));
     const arrival = await validateArrivalInformation({
       arrival: input,
       purchase,
