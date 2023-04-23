@@ -3,30 +3,18 @@ import { prisma } from "../database/prisma";
 import { publicProcedure } from "../trpc/initialize";
 import { makeHash } from "../utils/hash";
 import { RegisterInput } from "./api-schema";
-import { RegisterWorkflow } from "./core/types";
+import { Customer } from "./core/types";
 
-type Workflow = RegisterWorkflow<RegisterInput>;
-
-async function registerWorkflow(input: Workflow["input"], deps: Workflow["deps"]): Workflow["output"] {
-  const validatedInput = await deps.validateRegisterInput(input);
-  const customer = await deps.persistCustomer(validatedInput);
-  await deps.sendVerificationEmail(customer);
-
-  return customer;
-}
-
-type Deps = Workflow["deps"];
-
-const validateRegisterInput: Deps["validateRegisterInput"] = async (input) => {
+async function validateRegisterInput(input: RegisterInput): Promise<RegisterInput> {
   const isEmailUsed = (await prisma.customerCredential.findUnique({ where: { email: input.email } })) !== null;
   if (isEmailUsed) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "メールアドレスが既に使用されています" });
   }
 
   return input;
-};
+}
 
-const persistCustomer: Deps["persistCustomer"] = async (input) => {
+async function persistCustomer(input: RegisterInput): Promise<Customer> {
   const customer = await prisma.customer.create({
     data: {
       name: input.name,
@@ -42,10 +30,17 @@ const persistCustomer: Deps["persistCustomer"] = async (input) => {
   });
 
   return { id: customer.id, name: customer.name, email: customer.customerCredential.email };
-};
+}
 
-const sendVerificationEmail: Deps["sendVerificationEmail"] = async (customer) => {};
+async function sendVerificationEmail(customer: Customer): Promise<void> {}
 
-export const register = publicProcedure
-  .input(RegisterInput)
-  .mutation(({ input }) => registerWorkflow(input, { validateRegisterInput, persistCustomer, sendVerificationEmail }));
+/**
+ * 顧客のユーザー登録をする
+ */
+export const register = publicProcedure.input(RegisterInput).mutation(async ({ input }) => {
+  const validatedInput = await validateRegisterInput(input);
+  const customer = await persistCustomer(validatedInput);
+  await sendVerificationEmail(customer);
+
+  return customer;
+});

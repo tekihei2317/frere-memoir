@@ -1,40 +1,28 @@
 import { TRPCError } from "@trpc/server";
 import { RegisterArrivalInformationInput } from "./api-schema";
-import { RegisterArrivalInformationWorkflow } from "./types";
-import { adminProcedure, notFoundError } from "../trpc/initialize";
+import {
+  ArrivalDetail,
+  CreatedPurchase,
+  PurchaseArrival,
+  UnvalidatedArrivalDetail,
+  UnvalidatedPurchaseArrival,
+} from "./core/types";
 import { fixDateForPrisma, prisma } from "../database/prisma";
+import { adminProcedure } from "../trpc/initialize";
+import { throwNotFoundErrorIfNull } from "../utils/trpc";
 
-type Workflow = RegisterArrivalInformationWorkflow<RegisterArrivalInformationInput>;
-
-async function registerArrivalInformationWorkFlow(
-  input: Workflow["input"],
-  deps: Workflow["deps"]
-): Workflow["output"] {
-  const purchase = await deps.findPurchaseById(input.purchaseId);
-  const arrival = await deps.validateArrivalInformation({
-    arrival: input,
-    purchase,
-    validateArrivalDetails: deps.validateArrivalDetails,
-  });
-
-  await deps.persistArrivalInformation(arrival);
-}
-
-type Deps = Workflow["deps"];
-
-const findPurchaseById: Deps["findPurchaseById"] = async (purchaseId) => {
+async function findPurchaseById(purchaseId: number): Promise<CreatedPurchase | null> {
   const purchase = await prisma.flowerOrder.findUnique({
     where: { id: purchaseId },
     include: {
       orderDetails: { include: { flower: true } },
     },
   });
-  if (purchase === null) throw notFoundError;
 
   return purchase;
-};
+}
 
-const validateArrivalDetails: Deps["validateArrivalDetails"] = async (arrivalDetails) => {
+async function validateArrivalDetails(arrivalDetails: UnvalidatedArrivalDetail[]): Promise<ArrivalDetail[]> {
   const orderDetailIds = arrivalDetails.map((detail) => detail.orderDetailId);
   const uniqueOrderDetailIds = [...new Set(orderDetailIds)];
 
@@ -55,23 +43,25 @@ const validateArrivalDetails: Deps["validateArrivalDetails"] = async (arrivalDet
   const orderDetailsMap = new Map(orderDetails.map((detail) => [detail.id, detail]));
 
   return arrivalDetails.map((detail) => ({ ...detail, orderDetail: orderDetailsMap.get(detail.orderDetailId)! }));
-};
+}
 
-const validateArrivalInformation: Deps["validateArrivalInformation"] = async ({
+async function validateArrivalInformation({
   arrival,
   purchase,
-  validateArrivalDetails,
-}) => {
-  const validatedArrivalDetails = await validateArrivalDetails(arrival.arrivalDetails, purchase);
+}: {
+  arrival: UnvalidatedPurchaseArrival;
+  purchase: CreatedPurchase;
+}): Promise<PurchaseArrival> {
+  const validatedArrivalDetails = await validateArrivalDetails(arrival.arrivalDetails);
 
   return {
     purchaseId: arrival.purchaseId,
     arrivedAt: new Date(),
     arrivalDetails: validatedArrivalDetails,
   };
-};
+}
 
-const persistArrivalInformation: Deps["persistArrivalInformation"] = async (arrivalInfo) => {
+async function persistArrivalInformation(arrivalInfo: PurchaseArrival): Promise<void> {
   // 在庫を作成する
   const inventories = await Promise.all(
     arrivalInfo.arrivalDetails.map(async (detail) => {
@@ -113,15 +103,19 @@ const persistArrivalInformation: Deps["persistArrivalInformation"] = async (arri
       },
     },
   });
-};
+}
 
+/**
+ * 仕入れ情報を登録する
+ */
 export const registerArrivalInformation = adminProcedure
   .input(RegisterArrivalInformationInput)
   .mutation(async ({ input }) => {
-    return registerArrivalInformationWorkFlow(input, {
-      findPurchaseById,
-      validateArrivalDetails,
-      validateArrivalInformation,
-      persistArrivalInformation,
+    const purchase = throwNotFoundErrorIfNull(await findPurchaseById(input.purchaseId));
+    const arrival = await validateArrivalInformation({
+      arrival: input,
+      purchase,
     });
+
+    await persistArrivalInformation(arrival);
   });

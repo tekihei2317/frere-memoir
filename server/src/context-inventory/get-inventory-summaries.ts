@@ -1,5 +1,5 @@
 import { prisma } from "../database/prisma";
-import { InventorySummary } from "./types";
+import { InventorySummary } from "./core/types";
 
 type FlowerQuantity = {
   flowerId: number;

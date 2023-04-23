@@ -1,41 +1,29 @@
+import { prisma } from "../database/prisma";
 import { adminProcedure, notFoundError } from "../trpc/initialize";
 import { PurchaseIdInput } from "./api-schema";
-import { CancelPurchaseWorkflow } from "./types";
+import { CreatedPurchase } from "./core/types";
 
-type Workflow = CancelPurchaseWorkflow<PurchaseIdInput>;
+async function findUndeliveredPurchase(purchaseId: number): Promise<CreatedPurchase> {
+  const purchase = await prisma.flowerOrder.findFirst({
+    where: { id: purchaseId, arrivedEvent: null },
+    include: { orderDetails: { include: { flower: true } } },
+  });
+  if (purchase === null) throw notFoundError;
 
-async function cancelPurchaseWorkflow(input: Workflow["input"], deps: Workflow["deps"]): Workflow["output"] {
-  const purchase = await deps.findUndeliveredPurchase(input.purchaseId);
-
-  // TODO: トランザクション
-  await deps.deletePurchase(purchase);
-  await deps.sendCancelPurchaseEmail(purchase);
+  return purchase;
 }
 
-export const cancelPurchase = adminProcedure.input(PurchaseIdInput).mutation(async ({ ctx, input }) => {
-  type Deps = Workflow["deps"];
+async function sendCancelPurchaseEmail(purchase: CreatedPurchase): Promise<void> {}
 
-  const findUndeliveredPurchase: Deps["findUndeliveredPurchase"] = async (purchaseId) => {
-    const purchase = await ctx.prisma.flowerOrder.findFirst({
-      where: { id: purchaseId, arrivedEvent: null },
-      include: { orderDetails: { include: { flower: true } } },
-    });
-    if (purchase === null) throw notFoundError;
+async function deletePurchase(purchase: CreatedPurchase): Promise<void> {
+  await prisma.flowerOrderDetail.deleteMany({ where: { flowerOrderId: purchase.id } });
+  await prisma.flowerOrder.delete({ where: { id: purchase.id } });
+}
 
-    return purchase;
-  };
+export const cancelPurchase = adminProcedure.input(PurchaseIdInput).mutation(async ({ ctx, input }): Promise<void> => {
+  const purchase = await findUndeliveredPurchase(input.purchaseId);
 
-  // スタブ
-  const sendCancelPurchaseEmail: Deps["sendCancelPurchaseEmail"] = async () => {};
-
-  const deletePurchase: Deps["deletePurchase"] = async (purchase) => {
-    await ctx.prisma.flowerOrderDetail.deleteMany({ where: { flowerOrderId: purchase.id } });
-    await ctx.prisma.flowerOrder.delete({ where: { id: purchase.id } });
-  };
-
-  return cancelPurchaseWorkflow(input, {
-    findUndeliveredPurchase,
-    sendCancelPurchaseEmail,
-    deletePurchase,
-  });
+  // TODO: トランザクション
+  await deletePurchase(purchase);
+  await sendCancelPurchaseEmail(purchase);
 });

@@ -15,18 +15,9 @@ export type FlowerInventory = {
   arrivalDate: Date;
   currentQuantity: number;
 };
+
 export type FlowerDisposal = {
   id: number;
   flowerInventoryId: number;
   disposedCount: number;
-};
-
-export type DisposeFlowerWorkflow<DisposeFlowerInput> = {
-  input: DisposeFlowerInput;
-  output: Promise<FlowerDisposal>;
-  deps: {
-    validateDisposeFlowerInput: (input: DisposeFlowerInput) => Promise<DisposeFlowerInput>;
-    persistFlowerDisposal: (input: DisposeFlowerInput) => Promise<FlowerDisposal>;
-    updateFlowerInventory: (flowerDisposal: FlowerDisposal) => Promise<FlowerInventory>;
-  };
 };

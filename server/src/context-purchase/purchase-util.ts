@@ -1,4 +1,4 @@
-import { CheckIfDeliverable } from "./types";
+import { CheckIfDeliverable } from "./core/types";
 
 export const checkIfDeliverable: CheckIfDeliverable = () => {
   return true;

@@ -1,21 +1,10 @@
 import { adminProcedure, notFoundError } from "../trpc/initialize";
 import { prisma } from "../database/prisma";
 import { DisposeFlowerInput } from "./api-schema";
-import { DisposeFlowerWorkflow } from "./types";
 import { TRPCError } from "@trpc/server";
+import { FlowerDisposal, FlowerInventory } from "./core/types";
 
-type Workflow = DisposeFlowerWorkflow<DisposeFlowerInput>;
-type Deps = Workflow["deps"];
-
-async function disposeFlowerWorkflow(input: Workflow["input"], deps: Workflow["deps"]): Workflow["output"] {
-  const validatedInput = await deps.validateDisposeFlowerInput(input);
-  const flowerDisposal = await deps.persistFlowerDisposal(validatedInput);
-  await deps.updateFlowerInventory(flowerDisposal);
-
-  return flowerDisposal;
-}
-
-const validateDisposeFlowerInput: Deps["validateDisposeFlowerInput"] = async (input) => {
+async function validateDisposeFlowerInput(input: DisposeFlowerInput): Promise<DisposeFlowerInput> {
   // 在庫IDが正しいこと
   const inventory = await prisma.flowerInventory.findUnique({ where: { id: input.flowerInventoryId } });
   if (inventory === null) throw notFoundError;
@@ -26,30 +15,30 @@ const validateDisposeFlowerInput: Deps["validateDisposeFlowerInput"] = async (in
   }
 
   return input;
-};
+}
 
-const persistFlowerDisposal: Deps["persistFlowerDisposal"] = async (input) => {
+async function persistFlowerDisposal(input: DisposeFlowerInput): Promise<FlowerDisposal> {
   return prisma.flowerDisposal.create({
     data: {
       flowerInventoryId: input.flowerInventoryId,
       disposedCount: input.disposedCount,
     },
   });
-};
+}
 
-const updateFlowerInventory: Deps["updateFlowerInventory"] = async (flowerDisposal) => {
+async function updateFlowerInventory(flowerDisposal: FlowerDisposal): Promise<FlowerInventory> {
   return prisma.flowerInventory.update({
     where: { id: flowerDisposal.flowerInventoryId },
     data: {
       currentQuantity: { decrement: flowerDisposal.disposedCount },
     },
   });
-};
+}
 
 export const disposeFlower = adminProcedure.input(DisposeFlowerInput).mutation(async ({ input }) => {
-  return disposeFlowerWorkflow(input, {
-    validateDisposeFlowerInput,
-    persistFlowerDisposal,
-    updateFlowerInventory,
-  });
+  const validatedInput = await validateDisposeFlowerInput(input);
+  const flowerDisposal = await persistFlowerDisposal(validatedInput);
+  await updateFlowerInventory(flowerDisposal);
+
+  return flowerDisposal;
 });

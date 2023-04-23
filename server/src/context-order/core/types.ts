@@ -16,12 +16,6 @@ export type ValidatedOrder = {
   orderDetails: ValidatedOrderDetail[];
 };
 
-type OrderDetail = {
-  id: number;
-  flowerId: number;
-  flowerQuantity: number;
-};
-
 export type PlacedOrder = {
   id: number;
   customerId: number;

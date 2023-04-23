@@ -1,5 +1,3 @@
-import { DefineWorkflow } from "../../utils/workflow";
-
 export type Flower = {
   id: number;
   flowerCode: string;
@@ -21,12 +19,3 @@ export type Bouquet = {
   name: string;
   bouquetDetails: BouquetDetail[];
 };
-
-export type CreateBouquetWorkflow<CreateBouquetInput> = DefineWorkflow<{
-  input: CreateBouquetInput;
-  output: Promise<Bouquet>;
-  steps: {
-    validateCreateBouquetInput: (input: CreateBouquetInput) => Promise<CreateBouquetInput>;
-    persistBouquet: (input: CreateBouquetInput) => Promise<Bouquet>;
-  };
-}>;
